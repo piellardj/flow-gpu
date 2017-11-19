@@ -37,16 +37,23 @@ int main()
 	std::cout << "Using GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl << std::endl;
 
 	std::unique_ptr<Mode> mode;
+	const std::string flowmapStr = "rc/layer1_flowmap.txt";
+	const std::string backStr = "rc/layer1_background.png";
+
 //#define EDIT
 #ifdef EDIT
 	{
 		std::unique_ptr<EditMode> tmp;
-		tmp.reset(new EditMode("flowMap2.txt", window, "flowMap.txt"));
-		tmp->setBackground("rc/background.bmp");
+		tmp.reset(new EditMode(flowmapStr, window, flowmapStr));
+		tmp->setBackground(backStr);
 		mode = std::move(tmp);
 	}
 #else
-	mode.reset(new PlayMode("rc/background.bmp", "flowMap2.txt", window));
+	std::vector<PlayMode::LevelFilename> filenames;
+	filenames.emplace_back("rc/layer0_background.png", "rc/layer0_flowmap.txt");
+	filenames.emplace_back("rc/layer1_background.png", "rc/layer1_flowmap.txt");
+	filenames.emplace_back("rc/layer2_background.png", "rc/layer2_flowmap.txt");
+	mode.reset(new PlayMode(filenames, window));
 #endif
 
 	bool running = true;

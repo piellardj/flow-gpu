@@ -9,63 +9,75 @@
 #include <SFML/Graphics/Image.hpp>
 
 
-PlayMode::PlayMode(std::string const& backgroundFilename, std::string const& flowFilename, sf::Window const& window) :
-	Mode(window),
-	_flowFilename(flowFilename)
+PlayMode::PlayMode(std::vector<LevelFilename> const& lvlFilenames, sf::Window const& window) :
+	Mode(window)
 {
-	/* Background loading */
-	{
-		glm::uvec2 bufferSize;
-		std::vector<uint8_t> backgroundBuffer;
+	for (unsigned int iL = 0u; iL < lvlFilenames.size(); ++iL) {
+		_levels.push_back(Level());
 
-		if (!IO::load32bitImage(backgroundFilename, bufferSize, backgroundBuffer)) {
-			bufferSize = glm::uvec2(1u, 1u);
-			backgroundBuffer.resize(4u, 128u);
+		LevelFilename const& names = lvlFilenames[iL];
+		Level& lvl = _levels.back();
+
+
+		/* Background loading */
+		{
+			glm::uvec2 bufferSize;
+			std::vector<uint8_t> backgroundBuffer;
+
+			if (!IO::load32bitImage(names.backgroundFilename, bufferSize, backgroundBuffer)) {
+				bufferSize = glm::uvec2(1u, 1u);
+				backgroundBuffer.resize(4u, 128u);
+			}
+
+			lvl.background.reset(new Background(bufferSize, backgroundBuffer));
+
+			std::vector<uint8_t> density(bufferSize.x * bufferSize.y);
+			for (unsigned int i = 0u; i < density.size(); ++i) {
+				density[i] = backgroundBuffer[4u * i + 3];
+			}
+
+			lvl.densityMap.reset(new DensityMap(bufferSize, density));
 		}
 
-		_background.reset(new Background(bufferSize, backgroundBuffer));
-
-		std::vector<uint8_t> density(bufferSize.x * bufferSize.y);
-		for (unsigned int i = 0u; i < density.size(); ++i) {
-			density[i] = backgroundBuffer[4u * i + 3];
+		/* Flow map loading */
+		{
+			glm::uvec2 bufferSize;
+			std::vector<glm::vec2> buffer;
+			IO::loadFlowMap(names.flowFilename, bufferSize, buffer);
+			lvl.flowMap.reset(new FlowMap(bufferSize, buffer));
 		}
 
-		_densityMap.reset(new DensityMap(bufferSize, density));
+		std::vector<glm::vec2> initPos = lvl.densityMap->computeInitPos(200*200);
+		lvl.particles.reset(new Particles(initPos));
 	}
-
-	/* Flow map loading */
-	{
-		glm::uvec2 bufferSize;
-		std::vector<glm::vec2> buffer;
-		IO::loadFlowMap(flowFilename, bufferSize, buffer);
-		_flowMap.reset(new FlowMap(bufferSize, buffer));
-	}
-
-	std::vector<glm::vec2> initPos = _densityMap->computeInitPos(128*128);
-	_particles.reset(new Particles(initPos));
 }
 
 
 void PlayMode::update(float time)
 {
-	_particles->update(*_flowMap, *_background, time);
+	for (Level const& lvl : _levels) {
+		lvl.particles->update(*lvl.flowMap, *lvl.background, time);
+	}
 }
 
 void PlayMode::display() const
 {
-	if (_background && showBackground()) {
-		_background->display();
-	}
-	if (_flowMap && showArrows()) {
-		_flowMap->drawArrows();
+	for (Level const& lvl : _levels) {
+		if (lvl.background && showBackground()) {
+			lvl.background->display();
+		}
 	}
 
-	_particles->draw();
+	for (unsigned int iL = 0u; iL < _levels.size(); ++iL) {
+		_levels[iL].particles->draw(iL);
+	}
 }
 
 void PlayMode::mouseMoved(glm::vec2 const& movement)
 {
-	_flowMap->addFlow(mousePos(), movement);
+	for (Level const& lvl : _levels) {
+		lvl.flowMap->addFlow(mousePos(), movement);
+	}
 }
 
 void PlayMode::doHandleEvent(sf::Event const& event)

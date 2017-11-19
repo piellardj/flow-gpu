@@ -247,7 +247,7 @@ void Particles::update(FlowMap& flowMap, Background& background, float elapsedTi
 	GLCHECK(glBindFramebuffer(GL_FRAMEBUFFER, previousFBO));
 }
 
-void Particles::draw() const
+void Particles::draw(unsigned int level) const
 {
 	if (!_drawShader.isValid())
 		return;
@@ -263,6 +263,11 @@ void Particles::draw() const
 	GLuint clockULoc = _drawShader.getUniformLocation("clock");
 	if (clockULoc != ShaderProgram::nullLocation) {
 		GLCHECK(glUniform1f(clockULoc, _lastUpdate));
+	}
+
+	GLuint lvlULoc = _drawShader.getUniformLocation("level");
+	if (lvlULoc != ShaderProgram::nullLocation) {
+		GLCHECK(glUniform1ui(lvlULoc, level));
 	}
 
 	/* Actual drawing */

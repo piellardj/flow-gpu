@@ -15,7 +15,17 @@
 class PlayMode : public Mode
 {
 public:
-	PlayMode(std::string const& backgroundFilename, std::string const& flowFilename, sf::Window const& window);
+	struct LevelFilename
+	{
+		LevelFilename(std::string const& back, std::string const& flow) :
+			backgroundFilename(back), flowFilename(flow)
+		{}
+
+		std::string backgroundFilename;
+		std::string flowFilename;
+	};
+
+	PlayMode(std::vector<LevelFilename> const& lvlFilenames, sf::Window const& window);
 	virtual ~PlayMode() {}
 
 	virtual void update(float time);
@@ -26,12 +36,15 @@ private:
 	virtual void doHandleEvent(sf::Event const& event);
 
 private:
-	const std::string _flowFilename;
+	struct Level
+	{
+		std::unique_ptr<Background> background;
+		std::unique_ptr<DensityMap> densityMap;
+		std::unique_ptr<FlowMap> flowMap;
+		std::unique_ptr<Particles> particles;
+	};
 
-	std::unique_ptr<Background> _background;
-	std::unique_ptr<DensityMap> _densityMap;
-	std::unique_ptr<FlowMap> _flowMap;
-	std::unique_ptr<Particles> _particles;
+	std::vector<Level> _levels;
 };
 
 #endif // PLAY_MODE_HPP_INCLUDED

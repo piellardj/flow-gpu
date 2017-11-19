@@ -21,7 +21,7 @@ public:
 	virtual ~Particles();
 
 	void update(FlowMap& flowMap, Background& background, float elapsedTimeSinceStart);
-	void draw() const;
+	void draw(unsigned int level) const;
 
 	unsigned int nbParticles() const;
 

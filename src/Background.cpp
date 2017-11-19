@@ -61,7 +61,7 @@ void Background::display(float brightness) const
 
 	GLCHECK(glDisable(GL_DEPTH_TEST));
 	GLCHECK(glEnable(GL_BLEND));
-	GLCHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE));
+	GLCHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 	GLCHECK(glBindVertexArray(_emptyVAO));
 	GLCHECK(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
 	GLCHECK(glBindVertexArray(0));
