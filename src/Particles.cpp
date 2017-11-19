@@ -32,8 +32,8 @@ static float random(float from = 0.f, float to = 1.f)
 	return r * (to - from) + from;
 }
 
-Particles::Particles(unsigned int minAmount) :
-	_bufferSize(computeBufferSize(minAmount)),
+Particles::Particles(std::vector<glm::vec2> const& initPos) :
+	_bufferSize(computeBufferSize(initPos.size())),
 	_lastUpdate(0.f),
 	_emptyVAO(0u),
 	_updateFBO(0u),
@@ -64,24 +64,17 @@ Particles::Particles(unsigned int minAmount) :
 
 	/* Buffers allocation */
 	{
-		std::vector<glm::vec2> pos;
-		glm::vec2 d = glm::vec2(1.f) / glm::vec2(_bufferSize.x + 1, _bufferSize.y + 1);
-		for (unsigned int iX = 0u; iX < _bufferSize.x; ++iX) {
-			for (unsigned int iY = 0u; iY < _bufferSize.y; ++iY) {
-				pos.emplace_back(static_cast<float>(iX + 1) * d.x, static_cast<float>(iY + 1) * d.y);
-			}
-		}
 		GLCHECK(glGenTextures(_posTexture.size(), _posTexture.data()));
 		for (GLuint& bufferId : _posTexture) {
 			GLCHECK(glBindTexture(GL_TEXTURE_2D, bufferId));
-			GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F, _bufferSize.x, _bufferSize.y, 0, GL_RG, GL_FLOAT, pos.data()));
+			GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F, _bufferSize.x, _bufferSize.y, 0, GL_RG, GL_FLOAT, initPos.data()));
 			GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 			GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
 		}
 
 		GLCHECK(glGenTextures(1, &_initPosTexture));
 		GLCHECK(glBindTexture(GL_TEXTURE_2D, _initPosTexture));
-		GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, _bufferSize.x, _bufferSize.y, 0, GL_RG, GL_FLOAT, pos.data()));
+		GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, _bufferSize.x, _bufferSize.y, 0, GL_RG, GL_FLOAT, initPos.data()));
 		GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 		GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
 	}

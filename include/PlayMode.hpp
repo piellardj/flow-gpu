@@ -6,6 +6,7 @@
 #include "FlowMap.hpp"
 #include "Background.hpp"
 #include "Particles.hpp"
+#include "DensityMap.hpp"
 
 #include <SFML/System/Clock.hpp>
 #include <memory>
@@ -27,9 +28,10 @@ private:
 private:
 	const std::string _flowFilename;
 
-	std::unique_ptr<FlowMap> _flowMap;
 	std::unique_ptr<Background> _background;
-	Particles _particles;
+	std::unique_ptr<DensityMap> _densityMap;
+	std::unique_ptr<FlowMap> _flowMap;
+	std::unique_ptr<Particles> _particles;
 };
 
 #endif // PLAY_MODE_HPP_INCLUDED

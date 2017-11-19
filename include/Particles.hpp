@@ -17,7 +17,7 @@ class Background;
 class Particles: public NonCopyable
 {
 public:
-	Particles(unsigned int minAmount);
+	Particles(std::vector<glm::vec2> const& initPos);
 	virtual ~Particles();
 
 	void update(FlowMap& flowMap, Background& background, float elapsedTimeSinceStart);

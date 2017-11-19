@@ -3,6 +3,7 @@
 
 #include "GLHelper.hpp"
 #include "IO.hpp"
+#include "glm.hpp"
 
 #include <iostream>
 #include <SFML/Graphics/Image.hpp>
@@ -10,20 +11,26 @@
 
 PlayMode::PlayMode(std::string const& backgroundFilename, std::string const& flowFilename, sf::Window const& window) :
 	Mode(window),
-	_flowFilename(flowFilename),
-	_particles(256*256)
+	_flowFilename(flowFilename)
 {
 	/* Background loading */
 	{
 		glm::uvec2 bufferSize;
-		std::vector<uint8_t> buffer;
+		std::vector<uint8_t> backgroundBuffer;
 
-		if (!IO::load32bitImage(backgroundFilename, bufferSize, buffer)) {
+		if (!IO::load32bitImage(backgroundFilename, bufferSize, backgroundBuffer)) {
 			bufferSize = glm::uvec2(1u, 1u);
-			buffer.resize(4u, 128u);
+			backgroundBuffer.resize(4u, 128u);
 		}
 
-		_background.reset(new Background(bufferSize, buffer));
+		_background.reset(new Background(bufferSize, backgroundBuffer));
+
+		std::vector<uint8_t> density(bufferSize.x * bufferSize.y);
+		for (unsigned int i = 0u; i < density.size(); ++i) {
+			density[i] = backgroundBuffer[4u * i + 3];
+		}
+
+		_densityMap.reset(new DensityMap(bufferSize, density));
 	}
 
 	/* Flow map loading */
@@ -33,12 +40,15 @@ PlayMode::PlayMode(std::string const& backgroundFilename, std::string const& flo
 		IO::loadFlowMap(flowFilename, bufferSize, buffer);
 		_flowMap.reset(new FlowMap(bufferSize, buffer));
 	}
+
+	std::vector<glm::vec2> initPos = _densityMap->computeInitPos(128*128);
+	_particles.reset(new Particles(initPos));
 }
 
 
 void PlayMode::update(float time)
 {
-	_particles.update(*_flowMap, *_background, time);
+	_particles->update(*_flowMap, *_background, time);
 }
 
 void PlayMode::display() const
@@ -50,7 +60,7 @@ void PlayMode::display() const
 		_flowMap->drawArrows();
 	}
 
-	_particles.draw();
+	_particles->draw();
 }
 
 void PlayMode::mouseMoved(glm::vec2 const& movement)
