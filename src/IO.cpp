@@ -37,9 +37,9 @@ namespace IO
 		return true;
 	}
 
-	bool load24bitImage(std::string const& filename, glm::uvec2& bufferSize, std::vector<uint8_t>& buffer)
+	bool load32bitImage(std::string const& filename, glm::uvec2& bufferSize, std::vector<uint8_t>& buffer)
 	{
-		std::cout << "Loading 24bit image from from '" << filename << "'...\n";
+		std::cout << "Loading 32bit image from from '" << filename << "'...\n";
 
 		sf::Image img;
 		if (!img.loadFromFile(filename)) {
@@ -51,14 +51,15 @@ namespace IO
 		img.flipVertically();
 
 		bufferSize = glm::uvec2(img.getSize().x, img.getSize().y);
-		buffer.resize(3 * bufferSize.x * bufferSize.y);
+		buffer.resize(4 * bufferSize.x * bufferSize.y);
 
 		unsigned int iT = 0u;
 		for (unsigned int iY = 0u; iY < bufferSize.y; ++iY) {
 			for (unsigned int iX = 0u; iX < bufferSize.x; ++iX) {
-				buffer[3 * iT + 0] = img.getPixel(iX, iY).r;
-				buffer[3 * iT + 1] = img.getPixel(iX, iY).g;
-				buffer[3 * iT + 2] = img.getPixel(iX, iY).b;
+				buffer[4 * iT + 0] = img.getPixel(iX, iY).r;
+				buffer[4 * iT + 1] = img.getPixel(iX, iY).g;
+				buffer[4 * iT + 2] = img.getPixel(iX, iY).b;
+				buffer[4 * iT + 3] = img.getPixel(iX, iY).a;
 				++iT;
 			}
 		}

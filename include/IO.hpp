@@ -12,7 +12,7 @@ namespace IO
 {
 	bool loadAlphaMask(std::string const& filename, glm::uvec2& bufferSize, std::vector<uint8_t>& buffer);
 	
-	bool load24bitImage(std::string const& filename, glm::uvec2& bufferSize, std::vector<uint8_t>& buffer);
+	bool load32bitImage(std::string const& filename, glm::uvec2& bufferSize, std::vector<uint8_t>& buffer);
 
 	bool loadFlowMap(std::string const& filename, glm::uvec2& bufferSize, std::vector<glm::vec2>& buffer);
 	bool saveFlowMap(std::string const& filename, glm::uvec2 const& bufferSize, std::vector<glm::vec2> const& buffer);

@@ -20,13 +20,13 @@ Background::Background(glm::uvec2 const& bufferSize, std::vector<uint8_t> const&
 	{
 		GLCHECK(glGenTextures(1, &_backgroundTexture));
 		GLCHECK(glBindTexture(GL_TEXTURE_2D, _backgroundTexture));
-		if (buffer.size() != 3u*bufferSize.x*bufferSize.y) {
+		if (buffer.size() != 4u * bufferSize.x * bufferSize.y) {
 			std::cout << "Background: the provided buffer was not of the right size." << std::endl;
-			std::array<uint8_t, 3> data = { 0, 1, 0 };
-			GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data()));
+			std::array<uint8_t, 4> data = { 0, 255, 0, 255};
+			GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.data()));
 		}
 		else {
-			GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, bufferSize.x, bufferSize.y, 0, GL_RGB, GL_UNSIGNED_BYTE, buffer.data()));
+			GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, bufferSize.x, bufferSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer.data()));
 		}
 		GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 		GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
@@ -60,6 +60,8 @@ void Background::display(float brightness) const
 	}
 
 	GLCHECK(glDisable(GL_DEPTH_TEST));
+	GLCHECK(glEnable(GL_BLEND));
+	GLCHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE));
 	GLCHECK(glBindVertexArray(_emptyVAO));
 	GLCHECK(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
 	GLCHECK(glBindVertexArray(0));

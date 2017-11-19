@@ -31,7 +31,7 @@ void EditMode::setBackground(std::string const& filename)
 {
 	glm::uvec2 bufferSize;
 	std::vector<uint8_t> buffer;
-	if (IO::load24bitImage(filename, bufferSize, buffer)) {
+	if (IO::load32bitImage(filename, bufferSize, buffer)) {
 		_background.reset(new Background(bufferSize, buffer));
 	}
 }

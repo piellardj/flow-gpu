@@ -12,7 +12,7 @@ layout(location = 0) out vec4 fragColor;
 
 void main()
 {
-	vec3 color = texture(backgroundTexture, sampleCoords).rgb;
+	vec4 texel = texture(backgroundTexture, sampleCoords);
 	
-	fragColor = vec4(brightness*color, 1);
+	fragColor = vec4(brightness*texel.rgb, texel.a);
 }

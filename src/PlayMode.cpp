@@ -18,9 +18,9 @@ PlayMode::PlayMode(std::string const& backgroundFilename, std::string const& flo
 		glm::uvec2 bufferSize;
 		std::vector<uint8_t> buffer;
 
-		if (!IO::load24bitImage(backgroundFilename, bufferSize, buffer)) {
+		if (!IO::load32bitImage(backgroundFilename, bufferSize, buffer)) {
 			bufferSize = glm::uvec2(1u, 1u);
-			buffer.resize(3u, 128u);
+			buffer.resize(4u, 128u);
 		}
 
 		_background.reset(new Background(bufferSize, buffer));
