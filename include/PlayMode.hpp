@@ -7,6 +7,7 @@
 #include "Background.hpp"
 #include "Particles.hpp"
 #include "DensityMap.hpp"
+#include "PickingTexture.hpp"
 
 #include <SFML/System/Clock.hpp>
 #include <memory>
@@ -45,6 +46,9 @@ private:
 	};
 
 	std::vector<Level> _levels;
+
+	PickingTexture _picking;
+	uint8_t _lastLevelPicked;
 };
 
 #endif // PLAY_MODE_HPP_INCLUDED

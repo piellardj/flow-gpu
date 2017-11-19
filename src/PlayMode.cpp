@@ -10,7 +10,8 @@
 
 
 PlayMode::PlayMode(std::vector<LevelFilename> const& lvlFilenames, sf::Window const& window) :
-	Mode(window)
+	Mode(window),
+	_picking(glm::uvec2(window.getSize().x, window.getSize().y))
 {
 	for (unsigned int iL = 0u; iL < lvlFilenames.size(); ++iL) {
 		_levels.push_back(Level());
@@ -30,6 +31,7 @@ PlayMode::PlayMode(std::vector<LevelFilename> const& lvlFilenames, sf::Window co
 			}
 
 			lvl.background.reset(new Background(bufferSize, backgroundBuffer));
+			_picking.addBackground(*lvl.background, iL);
 
 			std::vector<uint8_t> density(bufferSize.x * bufferSize.y);
 			for (unsigned int i = 0u; i < density.size(); ++i) {
@@ -50,6 +52,8 @@ PlayMode::PlayMode(std::vector<LevelFilename> const& lvlFilenames, sf::Window co
 		std::vector<glm::vec2> initPos = lvl.densityMap->computeInitPos(200*200);
 		lvl.particles.reset(new Particles(initPos));
 	}
+
+	_picking.lock();
 }
 
 
@@ -75,11 +79,25 @@ void PlayMode::display() const
 
 void PlayMode::mouseMoved(glm::vec2 const& movement)
 {
-	for (Level const& lvl : _levels) {
-		lvl.flowMap->addFlow(mousePos(), movement);
+	if (_lastLevelPicked < _levels.size()) {
+		_levels[_lastLevelPicked].flowMap->addFlow(mousePos(), movement);
 	}
+	//_picking.getLevel(mousePos());
+
+	/*for (Level const& lvl : _levels) {
+		lvl.flowMap->addFlow(mousePos(), movement);
+	}*/
 }
 
 void PlayMode::doHandleEvent(sf::Event const& event)
 {
+	switch (event.type) {
+	case sf::Event::MouseButtonPressed:
+		if (event.mouseButton.button == sf::Mouse::Left) {
+			_lastLevelPicked = _picking.getLevel(mousePos());
+		}
+		break;
+	default:
+		break;
+	}
 }
