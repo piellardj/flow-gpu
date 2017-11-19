@@ -66,7 +66,8 @@ Sampler2D::Sampler2D(glm::uvec2 const& size, std::vector<float> density) :
 
 	/* Split the grid into normalized lines */
 	for (unsigned int iLine = 0u; iLine < _size.y; ++iLine) {
-		_normalizedLines.emplace_back(&density[iLine * _size.x], &density[(iLine+1) * _size.y]);
+		auto lineStart = density.cbegin() + iLine * _size.x;
+		_normalizedLines.emplace_back(lineStart, lineStart + _size.x);
 		_cumulatedLines.emplace_back(normalizeLine(_normalizedLines.back()));
 	}
 	normalizeLine(_cumulatedLines);
