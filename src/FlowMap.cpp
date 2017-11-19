@@ -177,6 +177,8 @@ void FlowMap::drawMap() const
 	TextureBinder textureBinder;
 	textureBinder.bindTexture(_drawMapShader, "flowBuffer", currBufferId());
 
+	GLCHECK(glDisable(GL_DEPTH_TEST));
+	GLCHECK(glDisable(GL_BLEND));
 	GLCHECK(glBindVertexArray(_emptyVAO));
 	GLCHECK(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
 	GLCHECK(glBindVertexArray(0));
@@ -198,6 +200,8 @@ void FlowMap::drawArrows() const
 	if (sizeULoc != ShaderProgram::nullLocation) {
 		GLCHECK(glUniform1f(sizeULoc, .7f / static_cast<float>(_nbArrows.x)));
 	}
+	GLCHECK(glDisable(GL_DEPTH_TEST));
+	GLCHECK(glDisable(GL_BLEND));
 	GLCHECK(glBindVertexArray(_arrowsVAO));
 	GLCHECK(glDrawArraysInstanced(GL_TRIANGLES, 0, 3, _nbArrows.x*_nbArrows.y));
 	GLCHECK(glBindVertexArray(0));
