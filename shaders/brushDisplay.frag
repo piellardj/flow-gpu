@@ -16,6 +16,6 @@ void main()
 	
 	float distToRing = distance(dist, 1.0 - 0.5*thickness);
 	
-	float c = smoothstep(1.0-thickness, 1.0, dist);//1.0 - smoothstep(0.0, 0.5*thickness, distToRing);
+	float c = smoothstep(1.0-thickness, 1.0, dist);
     fragColor = vec4(1, 1, 1, c);
 }

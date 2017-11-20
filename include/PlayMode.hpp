@@ -32,7 +32,7 @@ public:
 	virtual void display() const;
 
 private:
-	virtual void mouseMoved(glm::vec2 const& movement);
+	virtual void mouseMoved(glm::ivec2 const& movement);
 	virtual void doUpdate(float time, float dt);
 	virtual void doHandleEvent(sf::Event const& event);
 

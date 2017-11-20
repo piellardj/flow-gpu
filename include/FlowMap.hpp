@@ -19,9 +19,11 @@ public:
 	FlowMap(glm::uvec2 const& bufferSize, std::vector<glm::vec2> flowBuffer);
 	virtual ~FlowMap();
 
+	inline glm::uvec2 const& getSize() { return _bufferSize; }
+
 	void getData(glm::uvec2& bufferSize, std::vector<glm::vec2>& flowBuffer) const;
 	
-	void addFlow(glm::vec2 const& pos, glm::vec2 const& flow, float brushSize=0.1f);
+	void addFlow(glm::vec2 const& pos, glm::vec2 const& flow, glm::vec2 const& brushSize);
 
 	void reset(float factor);
 

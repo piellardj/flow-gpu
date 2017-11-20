@@ -22,7 +22,7 @@ public:
 	virtual void display() const;
 
 private:
-	virtual void mouseMoved(glm::vec2 const& movement);
+	virtual void mouseMoved(glm::ivec2 const& movement);
 	virtual void doUpdate(float time, float dt);
 	virtual void doHandleEvent(sf::Event const& event);
 
@@ -32,10 +32,6 @@ private:
 	std::unique_ptr<FlowMap> _flowMap;
 	std::unique_ptr<Background> _background;
 	Brush _brush;
-
-	const float MIN_BRUSH_SIZE;
-	const float MAX_BRUSH_SIZE;
-	float _brushSize;
 };
 
 #endif // EDIT_MODE_HPP_INCLUDED

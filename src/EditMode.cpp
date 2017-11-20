@@ -10,9 +10,7 @@
 EditMode::EditMode(std::string const& saveFilename, sf::Window const& window, std::string const& flowmapFilename):
 	Mode(window),
 	_saveFilename(saveFilename),
-	MIN_BRUSH_SIZE(0.05f),
-	MAX_BRUSH_SIZE(0.4f),
-	_brushSize(0.5f * (MIN_BRUSH_SIZE + MAX_BRUSH_SIZE))
+	_brush(10.f, 100.f)
 {
 	glm::uvec2 bufferSize(128, 128);
 	std::vector<glm::vec2> buffer(bufferSize.x * bufferSize.y, glm::vec2(0.f));
@@ -36,6 +34,8 @@ void EditMode::setBackground(std::string const& filename)
 	}
 }
 
+#include <iostream>
+
 void EditMode::display() const
 {
 	if (_background && showBackground()) {
@@ -48,13 +48,18 @@ void EditMode::display() const
 		_flowMap->drawArrows();
 	}
 	if (showBrush()) {
-		_brush.display(mousePos(), glm::vec2(_brushSize));
+		_brush.display(_screenSize, iMousePos());
 	}
 }
 
-void EditMode::mouseMoved(glm::vec2 const& movement)
+void EditMode::mouseMoved(glm::ivec2 const& movement)
 {
-	_flowMap->addFlow(mousePos(), movement, _brushSize);
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		glm::vec2 relativeMovement = glm::vec2(movement.x, movement.y) / glm::vec2(_screenSize.x, _screenSize.y);
+		glm::vec2 relativeBrushSize = 2.f * glm::vec2(_brush.radius()) / glm::vec2(_screenSize.x, _screenSize.y);
+
+		_flowMap->addFlow(mousePos(), relativeMovement, relativeBrushSize);
+	}
 }
 
 void EditMode::doUpdate(float time, float dt)
@@ -73,11 +78,7 @@ void EditMode::doHandleEvent(sf::Event const& event)
 			IO::saveFlowMap(_saveFilename, bufferSize, buffer);
 		}
 	case sf::Event::MouseWheelScrolled:
-	{
-		float dSize = (MAX_BRUSH_SIZE - MIN_BRUSH_SIZE) / 10.f;
-		_brushSize -= dSize * static_cast<float>(event.mouseWheelScroll.delta);
-		_brushSize = std::min(MAX_BRUSH_SIZE, std::max(MIN_BRUSH_SIZE, _brushSize));
-	}
+		_brush.changeRadius(event.mouseWheelScroll.delta);
 		break;
 	default:
 		break;

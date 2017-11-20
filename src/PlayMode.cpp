@@ -69,10 +69,17 @@ void PlayMode::display() const
 	}
 }
 
-void PlayMode::mouseMoved(glm::vec2 const& movement)
+void PlayMode::mouseMoved(glm::ivec2 const& movement)
 {
-	if (_lastLevelPicked < _levels.size()) {
-		_levels[_lastLevelPicked].flowMap->addFlow(mousePos(), movement);
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		float brushRadius = 50.f;
+
+		glm::vec2 relativeMovement = glm::vec2(movement.x, movement.y) / glm::vec2(_screenSize.x, _screenSize.y);
+		glm::vec2 relativeBrushSize = 2.f * glm::vec2(brushRadius) / glm::vec2(_screenSize.x, _screenSize.y);
+
+		if (_lastLevelPicked < _levels.size()) {
+			_levels[_lastLevelPicked].flowMap->addFlow(mousePos(), relativeMovement, relativeBrushSize);
+		}
 	}
 }
 

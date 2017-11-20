@@ -2,6 +2,7 @@
 
 
 Mode::Mode(sf::Window const& window):
+	_screenSize(window.getSize().x, window.getSize().y),
 	_showArrows(true),
 	_showBackground(true),
 	_showFlowMap(true),
@@ -14,12 +15,10 @@ void Mode::handleEvent(sf::Event const& event, sf::Window const& window)
 {
 	glm::ivec2 prevPos = _iMousePos;
 	retrieveMousePos(window);
-	if (_iMousePos != prevPos && sf::Mouse::isButtonPressed(sf::Mouse::Left) && window.hasFocus()) {
+	if (_iMousePos != prevPos && window.hasFocus()) {
 		glm::ivec2 movement = _iMousePos - prevPos;
-		glm::vec2 fWindow(window.getSize().x, window.getSize().y);
-		glm::vec2 fMovement = glm::vec2(movement.x, movement.y) / fWindow;
 
-		mouseMoved(fMovement);
+		mouseMoved(movement);
 	}
 
 	switch (event.type) {
@@ -53,9 +52,13 @@ void Mode::update(float time)
 	_lastUpdate = time;
 }
 
+glm::vec2 Mode::pixelToRelative(glm::ivec2 const& v) const
+{
+	return glm::vec2(v.x, v.y) / glm::vec2(_screenSize.x, _screenSize.y);
+}
+
 void Mode::retrieveMousePos(sf::Window const& window)
 {
 	sf::Vector2i pos = sf::Mouse::getPosition(window);
 	_iMousePos = glm::ivec2(pos.x, static_cast<int>(window.getSize().y) - pos.y);
-	_fMousePos = glm::vec2(_iMousePos.x, _iMousePos.y) / glm::vec2(window.getSize().x, window.getSize().y);
 }

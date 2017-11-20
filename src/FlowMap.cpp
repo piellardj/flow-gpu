@@ -136,7 +136,7 @@ void FlowMap::getData(glm::uvec2& bufferSize, std::vector<glm::vec2>& flowBuffer
 	GLCHECK(glBindTexture(GL_TEXTURE_2D, 0u));
 }
 
-void FlowMap::addFlow(glm::vec2 const& pos, glm::vec2 const& flow, float brushSize)
+void FlowMap::addFlow(glm::vec2 const& pos, glm::vec2 const& flow, glm::vec2 const& brushSize)
 {
 	if (!_addShader.isValid())
 		return;
@@ -164,7 +164,7 @@ void FlowMap::addFlow(glm::vec2 const& pos, glm::vec2 const& flow, float brushSi
 	}
 	GLuint brushSizeULoc = _addShader.getUniformLocation("brushSize");
 	if (brushSizeULoc != ShaderProgram::nullLocation) {
-		GLCHECK(glUniform2f(brushSizeULoc, brushSize, brushSize));
+		GLCHECK(glUniform2f(brushSizeULoc, brushSize.x, brushSize.y));
 	}
 	GLuint brushPosULoc = _addShader.getUniformLocation("brushPos");
 	if (brushPosULoc != ShaderProgram::nullLocation) {

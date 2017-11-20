@@ -19,22 +19,28 @@ public:
 	virtual void display() const = 0;
 
 protected:
-	inline glm::vec2 mousePos() const { return _fMousePos; }
+	glm::vec2 pixelToRelative(glm::ivec2 const& v) const;
+
+	inline glm::ivec2 iMousePos() const { return _iMousePos; }
+	inline glm::vec2 mousePos() const { return pixelToRelative(_iMousePos); }
+
 	inline bool showArrows() const { return _showArrows; }
 	inline bool showBackground() const { return _showBackground; }
 	inline bool showFlowMap() const { return _showFlowMap; }
 	inline bool showBrush() const { return _showBrush; }
 
 private:
-	virtual void mouseMoved(glm::vec2 const& movement) = 0;
+	virtual void mouseMoved(glm::ivec2 const& movement) = 0;
 	virtual void doUpdate(float time, float dt) = 0;
 	virtual void doHandleEvent(sf::Event const& event) = 0;
 
 	void retrieveMousePos(sf::Window const& window);
 
+protected:
+	const glm::uvec2 _screenSize;
+
 private:
 	glm::ivec2 _iMousePos;
-	glm::vec2 _fMousePos;
 
 	float _lastUpdate;
 
