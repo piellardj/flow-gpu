@@ -91,7 +91,7 @@ FlowMap::FlowMap(glm::uvec2 const& bufferSize, std::vector<glm::vec2> flowBuffer
 	}
 
 	/* Shaders loading */
-	if (!_updateShader.loadFromFile("shaders/flowBufferUpdate.vert", "shaders/flowBufferUpdate.frag")) {
+	if (!_addShader.loadFromFile("shaders/flowBufferAdd.vert", "shaders/flowBufferAdd.frag")) {
 		std::cerr << "Error: unable to load shader flowBufferUpdate" << std::endl;
 	}
 	if (!_drawMapShader.loadFromFile("shaders/flowBufferDisplay.vert", "shaders/flowBufferDisplay.frag")) {
@@ -125,7 +125,7 @@ void FlowMap::getData(glm::uvec2& bufferSize, std::vector<glm::vec2>& flowBuffer
 
 void FlowMap::addFlow(glm::vec2 const& pos, glm::vec2 const& flow, float brushSize)
 {
-	if (!_updateShader.isValid())
+	if (!_addShader.isValid())
 		return;
 
 	switchBuffer();
@@ -139,21 +139,21 @@ void FlowMap::addFlow(glm::vec2 const& pos, glm::vec2 const& flow, float brushSi
 	GLCHECK(glViewport(0, 0, _bufferSize.x, _bufferSize.y));
 	GLCHECK(glClear(GL_COLOR_BUFFER_BIT));
 
-	ShaderProgram::bind(_updateShader);
+	ShaderProgram::bind(_addShader);
 
 	/* Uniforms setup */
 	TextureBinder textureBinder;
-	textureBinder.bindTexture(_updateShader, "previousBuffer", prevBufferId());
+	textureBinder.bindTexture(_addShader, "previousBuffer", prevBufferId());
 
-	GLuint flowULoc = _updateShader.getUniformLocation("flow");
+	GLuint flowULoc = _addShader.getUniformLocation("flow");
 	if (flowULoc != ShaderProgram::nullLocation) {
 		GLCHECK(glUniform2f(flowULoc, flow.x, flow.y));
 	}
-	GLuint brushSizeULoc = _updateShader.getUniformLocation("brushSize");
+	GLuint brushSizeULoc = _addShader.getUniformLocation("brushSize");
 	if (brushSizeULoc != ShaderProgram::nullLocation) {
 		GLCHECK(glUniform2f(brushSizeULoc, brushSize, brushSize));
 	}
-	GLuint brushPosULoc = _updateShader.getUniformLocation("brushPos");
+	GLuint brushPosULoc = _addShader.getUniformLocation("brushPos");
 	if (brushPosULoc != ShaderProgram::nullLocation) {
 		GLCHECK(glUniform2f(brushPosULoc, pos.x, pos.y));
 	}

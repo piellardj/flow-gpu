@@ -32,7 +32,7 @@ void main()
 
 	vec2 previousFlow = texture(previousBuffer, sampleCoord).rg;
 	
-	vec2 nextFlow = previousFlow + 100.0 * factor * flow;
+	vec2 nextFlow = previousFlow + 20.0 * factor * flow;
 	if (dot(nextFlow, nextFlow) > 1.0)
 		nextFlow = normalize(nextFlow);
 

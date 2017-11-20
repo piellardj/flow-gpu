@@ -48,7 +48,7 @@ private:
 
 	mutable ShaderProgram _drawMapShader;
 	mutable ShaderProgram _drawArrowsShader;
-	mutable ShaderProgram _updateShader;
+	mutable ShaderProgram _addShader;
 };
 
 
