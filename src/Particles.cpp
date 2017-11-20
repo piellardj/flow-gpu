@@ -176,8 +176,8 @@ Particles::Particles(std::vector<glm::vec2> const& initPos) :
 	if (!_updateShader.loadFromFile("shaders/particlesUpdate.vert", "shaders/particlesUpdate.frag")) {
 		std::cerr << "Error: unable to load shader particlesUpdate" << std::endl;
 	}
-	if (!_drawShader.loadFromFile("shaders/particlesDisplay.vert", "shaders/particlesDisplay.frag")) {
-		std::cerr << "Error: unable to load shader particlesDisplay" << std::endl;
+	if (!_drawShader.loadFromFile("shaders/particlesDraw.vert", "shaders/particlesDraw.frag")) {
+		std::cerr << "Error: unable to load shader particlesDraw" << std::endl;
 	}
 }
 
@@ -196,7 +196,7 @@ Particles::~Particles()
 	GLCHECK(glDeleteBuffers(1, &_strokeCornersVBO));
 }
 
-void Particles::update(FlowMap& flowMap, Background& background, float time, float dt)
+void Particles::update(glm::uvec2 const& screenSize, FlowMap& flowMap, Background& background, float time, float dt)
 {
 	_lastUpdate = time;
 
@@ -226,6 +226,10 @@ void Particles::update(FlowMap& flowMap, Background& background, float time, flo
 	textureBinder.bindTexture(_updateShader, "birthdateBuffer", _birthdateTexture[prevBufferNo()]);
 	textureBinder.bindTexture(_updateShader, "colorBuffer", background.textureId());
 
+	GLuint screenULoc = _updateShader.getUniformLocation("screenSize");
+	if (screenULoc != ShaderProgram::nullLocation) {
+		GLCHECK(glUniform2f(screenULoc, screenSize.x, screenSize.y));
+	}
 	GLuint dtULoc = _updateShader.getUniformLocation("dt");
 	if (dtULoc != ShaderProgram::nullLocation) {
 		GLCHECK(glUniform1f(dtULoc, dt));
@@ -246,7 +250,7 @@ void Particles::update(FlowMap& flowMap, Background& background, float time, flo
 	GLCHECK(glBindFramebuffer(GL_FRAMEBUFFER, previousFBO));
 }
 
-void Particles::draw(unsigned int layer) const
+void Particles::draw(glm::uvec2 const& screenSize, unsigned int layer) const
 {
 	if (!_drawShader.isValid())
 		return;
@@ -259,6 +263,10 @@ void Particles::draw(unsigned int layer) const
 	textureBinder.bindTexture(_drawShader, "birthdateBuffer", _birthdateTexture[currBufferNo()]);
 	textureBinder.bindTexture(_drawShader, "strokeTexture", _strokeTexture);
 
+	GLuint screenULoc = _drawShader.getUniformLocation("screenSize");
+	if (screenULoc != ShaderProgram::nullLocation) {
+		GLCHECK(glUniform2f(screenULoc, screenSize.x, screenSize.y));
+	}
 	GLuint clockULoc = _drawShader.getUniformLocation("clock");
 	if (clockULoc != ShaderProgram::nullLocation) {
 		GLCHECK(glUniform1f(clockULoc, _lastUpdate));

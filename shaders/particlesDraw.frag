@@ -1,5 +1,6 @@
 #version 330
 
+
 uniform sampler2D strokeTexture;
 
 uniform uint layer;

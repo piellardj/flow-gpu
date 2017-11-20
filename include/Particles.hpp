@@ -20,8 +20,8 @@ public:
 	Particles(std::vector<glm::vec2> const& initPos);
 	virtual ~Particles();
 
-	void update(FlowMap& flowMap, Background& background, float time, float dt);
-	void draw(unsigned int layer) const;
+	void update(glm::uvec2 const& screenSize, FlowMap& flowMap, Background& background, float time, float dt);
+	void draw(glm::uvec2 const& screenSize, unsigned int layer) const;
 
 	unsigned int nbParticles() const;
 

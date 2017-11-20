@@ -1,8 +1,12 @@
 #version 330
-#define PI 3.14159265359
-#define LIFETIME 5.0
-#define BIRTH_ANIM_TIME 1.0
-#define DEATH_ANIM_TIME 1.0
+const float PI = 3.14159265359;
+const float LIFETIME = 5.0;
+const float BIRTH_ANIM_TIME = 1.0;
+const float DEATH_ANIM_TIME = 1.0;
+
+
+uniform vec2 screenSize; //in pixels
+uniform vec2 strokeSize=vec2(16,4); //in pixels
 
 uniform sampler2D posBuffer;
 uniform sampler2D looksBuffer;
@@ -10,13 +14,12 @@ uniform sampler2D birthdateBuffer;
 
 uniform float clock;
 
-uniform vec2 strokeSize=vec2(0.015,0.003);
-
 layout(location = 0) in ivec2 texelCoords; //where to sample the particles buffer
 layout(location = 1) in vec2 corner; //{-1,1}x{-1,1}
 
 out vec2 sampleCoords;
 flat out vec4 color;
+
 
 vec2 rotateVector(vec2 v, float radAngle)
 {
@@ -40,6 +43,6 @@ void main()
 	float deathSizeFactor = smoothstep(0.0, DEATH_ANIM_TIME, LIFETIME-age);
 	float sizeFactor = min(birthSizeFactor, deathSizeFactor);
 	
-	vec2 pos = center + rotateVector(sizeFactor * strokeSize * corner, orientation);
-	gl_Position = vec4(2.0*pos - 1.0, 0, 1);
+	vec2 v = center + 0.5 * rotateVector(sizeFactor * strokeSize * corner, orientation) / screenSize;
+	gl_Position = vec4(2.0*v - 1.0, 0, 1);
 }

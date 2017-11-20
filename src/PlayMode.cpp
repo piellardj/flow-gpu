@@ -65,7 +65,7 @@ void PlayMode::display() const
 	}
 
 	for (unsigned int iL = 0u; iL < _layers.size(); ++iL) {
-		_layers[iL].particles->draw(iL);
+		_layers[iL].particles->draw(_screenSize, iL);
 	}
 }
 
@@ -86,7 +86,7 @@ void PlayMode::mouseMoved(glm::ivec2 const& movement)
 void PlayMode::doUpdate(float time, float dt)
 {
 	for (Layer const& lvl : _layers) {
-		lvl.particles->update(*lvl.flowMap, *lvl.background, time, dt);
+		lvl.particles->update(_screenSize, *lvl.flowMap, *lvl.background, time, dt);
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {

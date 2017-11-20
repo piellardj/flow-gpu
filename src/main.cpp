@@ -49,7 +49,7 @@ int main()
 		mode = std::move(tmp);
 	}
 #else
-	std::vector<PlayMode::LevelFilename> filenames;
+	std::vector<PlayMode::LayerFilename> filenames;
 	filenames.emplace_back("rc/layer0_background.png", "rc/layer0_flowmap.txt");
 	filenames.emplace_back("rc/layer1_background.png", "rc/layer1_flowmap.txt");
 	filenames.emplace_back("rc/layer2_background.png", "rc/layer2_flowmap.txt");

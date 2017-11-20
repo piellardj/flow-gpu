@@ -1,7 +1,8 @@
 #version 330
-#define PI 3.14159265359
-#define LIFETIME 5.0
-#define BIRTHTIME 1.0
+const float PI = 3.14159265359;
+const float LIFETIME = 5.0;
+const float BIRTHTIME = 1.0;
+
 
 uniform sampler2D previousPosBuffer;
 uniform sampler2D previousLooksBuffer;
@@ -11,12 +12,15 @@ uniform sampler2D colorBuffer;
 
 uniform sampler2D flowMap;
 
-uniform float dt;
-uniform float clock;
+uniform vec2 screenSize; //in pixels
+uniform float maxSpeed=10.0; //in pixels / seconds
+uniform float dt; //in seconds
+uniform float clock; //in seconds
 
 layout(location = 0) out vec4 nextPosValue;
 layout(location = 1) out vec4 nextLooksValue;
 layout(location = 2) out vec4 nextBirthdateValue;
+
 
 void main()
 {
@@ -31,11 +35,11 @@ void main()
 	if (clock - prevBirthdate > LIFETIME) {
 		prevPos = texelFetch(initPosBuffer, texelCoords, 0).rg;
 		nextColor = texture(colorBuffer, prevPos).rgb;
-		nextBirthdate = clock;
+		nextBirthdate = prevBirthdate + LIFETIME;
 	}
 	
 	vec2 flow = texture(flowMap, prevPos).rg;
-	vec2 nextPos = prevPos + 0.02*dt*flow;
+	vec2 nextPos = prevPos + maxSpeed * dt * flow / screenSize;
 	float nextOrientation = atan(flow.y, flow.x) / (2.0 * PI) + 0.5;
 	
 	nextPosValue = vec4(nextPos, 0, 0);
