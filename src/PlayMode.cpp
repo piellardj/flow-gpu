@@ -9,15 +9,15 @@
 #include <SFML/Graphics/Image.hpp>
 
 
-PlayMode::PlayMode(std::vector<LevelFilename> const& lvlFilenames, sf::Window const& window) :
+PlayMode::PlayMode(std::vector<LayerFilename> const& lvlFilenames, sf::Window const& window) :
 	Mode(window),
 	_picking(glm::uvec2(window.getSize().x, window.getSize().y))
 {
 	for (unsigned int iL = 0u; iL < lvlFilenames.size(); ++iL) {
-		_levels.push_back(Level());
+		_layers.push_back(Layer());
 
-		LevelFilename const& names = lvlFilenames[iL];
-		Level& lvl = _levels.back();
+		LayerFilename const& names = lvlFilenames[iL];
+		Layer& lvl = _layers.back();
 
 
 		/* Background loading */
@@ -58,14 +58,14 @@ PlayMode::PlayMode(std::vector<LevelFilename> const& lvlFilenames, sf::Window co
 
 void PlayMode::display() const
 {
-	for (Level const& lvl : _levels) {
+	for (Layer const& lvl : _layers) {
 		if (lvl.background && showBackground()) {
 			lvl.background->display();
 		}
 	}
 
-	for (unsigned int iL = 0u; iL < _levels.size(); ++iL) {
-		_levels[iL].particles->draw(iL);
+	for (unsigned int iL = 0u; iL < _layers.size(); ++iL) {
+		_layers[iL].particles->draw(iL);
 	}
 }
 
@@ -77,22 +77,22 @@ void PlayMode::mouseMoved(glm::ivec2 const& movement)
 		glm::vec2 relativeMovement = glm::vec2(movement.x, movement.y) / glm::vec2(_screenSize.x, _screenSize.y);
 		glm::vec2 relativeBrushSize = 2.f * glm::vec2(brushRadius) / glm::vec2(_screenSize.x, _screenSize.y);
 
-		if (_lastLevelPicked < _levels.size()) {
-			_levels[_lastLevelPicked].flowMap->addFlow(mousePos(), relativeMovement, relativeBrushSize);
+		if (_lastLayerPicked < _layers.size()) {
+			_layers[_lastLayerPicked].flowMap->addFlow(mousePos(), relativeMovement, relativeBrushSize);
 		}
 	}
 }
 
 void PlayMode::doUpdate(float time, float dt)
 {
-	for (Level const& lvl : _levels) {
+	for (Layer const& lvl : _layers) {
 		lvl.particles->update(*lvl.flowMap, *lvl.background, time, dt);
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
 		dt = std::max(0.01f, std::min(0.5f, dt));
 
-		for (Level const& lvl : _levels) {
+		for (Layer const& lvl : _layers) {
 			lvl.flowMap->reset(2.f * dt);// dt * 20.f);
 		}
 	}
@@ -103,7 +103,7 @@ void PlayMode::doHandleEvent(sf::Event const& event)
 	switch (event.type) {
 	case sf::Event::MouseButtonPressed:
 		if (event.mouseButton.button == sf::Mouse::Left) {
-			_lastLevelPicked = _picking.getLevel(mousePos());
+			_lastLayerPicked = _picking.getLayer(mousePos());
 		}
 		break;
 	default:

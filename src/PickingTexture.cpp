@@ -8,11 +8,11 @@
 
 PickingTexture::PickingTexture(glm::uvec2 const& resolution):
 	_bufferSize(resolution),
-	_levelBuffer(resolution.x * resolution.y, PickingTexture::NO_LEVEL),
+	_layerBuffer(resolution.x * resolution.y, PickingTexture::NO_LEVEL),
 	_locked(false),
 	_emptyVAO(0u),
 	_FBO(0u),
-	_levelTexture(0u),
+	_layerTexture(0u),
 	_buildingShader(new ShaderProgram())
 {
 	/* VAO creation */
@@ -20,11 +20,11 @@ PickingTexture::PickingTexture(glm::uvec2 const& resolution):
 
 	/* Textures creation */
 	{
-		GLCHECK(glGenTextures(1, &_levelTexture));
-		GLCHECK(glBindTexture(GL_TEXTURE_2D, _levelTexture));
+		GLCHECK(glGenTextures(1, &_layerTexture));
+		GLCHECK(glBindTexture(GL_TEXTURE_2D, _layerTexture));
 		GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
 		GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-		GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, resolution.x, resolution.y, 0, GL_RED, GL_UNSIGNED_BYTE, _levelBuffer.data()));
+		GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, resolution.x, resolution.y, 0, GL_RED, GL_UNSIGNED_BYTE, _layerBuffer.data()));
 		GLCHECK(glBindTexture(GL_TEXTURE_2D, 0));
 	}
 
@@ -47,7 +47,7 @@ PickingTexture::~PickingTexture()
 	freeOpenGLResources();
 }
 
-uint8_t PickingTexture::getLevel(glm::vec2 const& coords) const
+uint8_t PickingTexture::getLayer(glm::vec2 const& coords) const
 {
 	glm::uvec2 iCoords(coords.x * static_cast<float>(_bufferSize.x),
 		coords.y * static_cast<float>(_bufferSize.y));
@@ -55,10 +55,10 @@ uint8_t PickingTexture::getLevel(glm::vec2 const& coords) const
 	if (coords.x >= _bufferSize.x || coords.y >= _bufferSize.y)
 		return PickingTexture::NO_LEVEL;
 
-	return _levelBuffer[iCoords.x + iCoords.y * _bufferSize.x];
+	return _layerBuffer[iCoords.x + iCoords.y * _bufferSize.x];
 }
 
-void PickingTexture::addBackground(Background& background, uint8_t level)
+void PickingTexture::addBackground(Background& background, uint8_t layer)
 {
 	if (_locked)
 		return;
@@ -68,7 +68,7 @@ void PickingTexture::addBackground(Background& background, uint8_t level)
 
 	/* FBO setup */
 	GLCHECK(glBindFramebuffer(GL_FRAMEBUFFER, _FBO));
-	GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _levelTexture, 0));
+	GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _layerTexture, 0));
 	GLCHECK(glViewport(0, 0, _bufferSize.x, _bufferSize.y));
 
 	ShaderProgram::bind(*_buildingShader);
@@ -76,9 +76,9 @@ void PickingTexture::addBackground(Background& background, uint8_t level)
 	TextureBinder textureBinder;
 	textureBinder.bindTexture(*_buildingShader, "background", background.textureId());
 
-	GLuint levelULoc = _buildingShader->getUniformLocation("level");
-	if (levelULoc != ShaderProgram::nullLocation) {
-		GLCHECK(glUniform1ui(levelULoc, level));
+	GLuint layerULoc = _buildingShader->getUniformLocation("layer");
+	if (layerULoc != ShaderProgram::nullLocation) {
+		GLCHECK(glUniform1ui(layerULoc, layer));
 	}
 
 	GLCHECK(glDisable(GL_DEPTH_TEST));
@@ -92,8 +92,8 @@ void PickingTexture::addBackground(Background& background, uint8_t level)
 
 void PickingTexture::lock()
 {
-	GLCHECK(glBindTexture(GL_TEXTURE_2D, _levelTexture));
-	GLCHECK(glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_UNSIGNED_BYTE, _levelBuffer.data()));
+	GLCHECK(glBindTexture(GL_TEXTURE_2D, _layerTexture));
+	GLCHECK(glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_UNSIGNED_BYTE, _layerBuffer.data()));
 	GLCHECK(glBindTexture(GL_TEXTURE_2D, 0u));
 
 	freeOpenGLResources();
@@ -109,5 +109,5 @@ void PickingTexture::freeOpenGLResources()
 
 	GLCHECK(glDeleteFramebuffers(1, &_FBO));
 
-	GLCHECK(glDeleteTextures(1, &_levelTexture));
+	GLCHECK(glDeleteTextures(1, &_layerTexture));
 }

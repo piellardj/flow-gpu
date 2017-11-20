@@ -19,9 +19,9 @@ public:
 	PickingTexture(glm::uvec2 const& resolution);
 	virtual ~PickingTexture();
 
-	uint8_t getLevel(glm::vec2 const& coords) const;
+	uint8_t getLayer(glm::vec2 const& coords) const;
 
-	void addBackground(Background& background, uint8_t level);
+	void addBackground(Background& background, uint8_t layer);
 	void lock();
 
 private:
@@ -29,13 +29,13 @@ private:
 
 private:
 	const glm::uvec2 _bufferSize;
-	std::vector<uint8_t> _levelBuffer;
+	std::vector<uint8_t> _layerBuffer;
 
 	bool _locked;
 
 	GLuint _emptyVAO = 0u;
 	GLuint _FBO = 0u;
-	GLuint _levelTexture = 0u;
+	GLuint _layerTexture = 0u;
 
 	std::unique_ptr<ShaderProgram> _buildingShader;
 };

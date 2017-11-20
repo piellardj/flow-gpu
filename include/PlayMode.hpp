@@ -16,9 +16,9 @@
 class PlayMode : public Mode
 {
 public:
-	struct LevelFilename
+	struct LayerFilename
 	{
-		LevelFilename(std::string const& back, std::string const& flow) :
+		LayerFilename(std::string const& back, std::string const& flow) :
 			backgroundFilename(back), flowFilename(flow)
 		{}
 
@@ -26,7 +26,7 @@ public:
 		std::string flowFilename;
 	};
 
-	PlayMode(std::vector<LevelFilename> const& lvlFilenames, sf::Window const& window);
+	PlayMode(std::vector<LayerFilename> const& lvlFilenames, sf::Window const& window);
 	virtual ~PlayMode() {}
 
 	virtual void display() const;
@@ -37,7 +37,7 @@ private:
 	virtual void doHandleEvent(sf::Event const& event);
 
 private:
-	struct Level
+	struct Layer
 	{
 		std::unique_ptr<Background> background;
 		std::unique_ptr<DensityMap> densityMap;
@@ -45,10 +45,10 @@ private:
 		std::unique_ptr<Particles> particles;
 	};
 
-	std::vector<Level> _levels;
+	std::vector<Layer> _layers;
 
 	PickingTexture _picking;
-	uint8_t _lastLevelPicked;
+	uint8_t _lastLayerPicked;
 };
 
 #endif // PLAY_MODE_HPP_INCLUDED

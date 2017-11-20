@@ -2,7 +2,7 @@
 
 uniform sampler2D strokeTexture;
 
-uniform uint level;
+uniform uint layer;
 
 in vec2 sampleCoords;
 flat in vec4 color;
@@ -17,5 +17,5 @@ void main()
 		discard;
 	
     fragColor = vec4(color.rgb, 1);
-	gl_FragDepth = 1.0 / float(level + 2u);
+	gl_FragDepth = 1.0 / float(layer + 2u);
 }

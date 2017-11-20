@@ -2,7 +2,7 @@
 
 
 uniform sampler2D background;
-uniform uint level;
+uniform uint layer;
 
 in vec2 sampleCoords;
 
@@ -16,7 +16,7 @@ void main()
 	if (alpha < 0.05)
 		discard;
 	
-	fragColor = vec4(float(level) / 255.0);
+	fragColor = vec4(float(layer) / 255.0);
 	
-	gl_FragDepth = 1.0 / float(level+ 2u);
+	gl_FragDepth = 1.0 / float(layer+ 2u);
 }
