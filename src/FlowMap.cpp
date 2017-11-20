@@ -69,9 +69,9 @@ FlowMap::FlowMap(glm::uvec2 const& bufferSize, std::vector<glm::vec2> flowBuffer
 		GLCHECK(glBindVertexArray(_arrowsVAO));
 
 		std::vector<glm::vec2> vert;
-		vert.emplace_back(+0.f, -.2f);
-		vert.emplace_back(+2.f, +0.f);
-		vert.emplace_back(+0.f, +.2f);
+		vert.emplace_back(+0.f, -.5f);
+		vert.emplace_back(+1.f, +0.f);
+		vert.emplace_back(+0.f, +.5f);
 		GLCHECK(glGenBuffers(1, &_arrowVBO));
 		GLCHECK(glBindBuffer(GL_ARRAY_BUFFER, _arrowVBO));
 		GLCHECK(glBufferData(GL_ARRAY_BUFFER, vert.size() * sizeof(glm::vec2), vert.data(), GL_STATIC_DRAW));
@@ -100,11 +100,11 @@ FlowMap::FlowMap(glm::uvec2 const& bufferSize, std::vector<glm::vec2> flowBuffer
 	}
 
 	/* Shaders loading */
-	if (!_drawMapShader.loadFromFile("shaders/flowBufferDisplay.vert", "shaders/flowBufferDisplay.frag")) {
-		std::cerr << "Error: unable to load shader flowBufferDisplay" << std::endl;
+	if (!_drawMapShader.loadFromFile("shaders/flowBufferDrawMap.vert", "shaders/flowBufferDrawMap.frag")) {
+		std::cerr << "Error: unable to load shader flowBufferDrawMap" << std::endl;
 	}
-	if (!_drawArrowsShader.loadFromFile("shaders/flowBufferDraw.vert", "shaders/flowBufferDraw.frag")) {
-		std::cerr << "Error: unable to load shader flowBufferDraw" << std::endl;
+	if (!_drawArrowsShader.loadFromFile("shaders/flowBufferDrawArrows.vert", "shaders/flowBufferDrawArrows.frag")) {
+		std::cerr << "Error: unable to load shader flowBufferDrawArrows" << std::endl;
 	}
 	if (!_addShader.loadFromFile("shaders/flowBufferAdd.vert", "shaders/flowBufferAdd.frag")) {
 		std::cerr << "Error: unable to load shader flowBufferUpdate" << std::endl;
@@ -236,7 +236,7 @@ void FlowMap::drawMap() const
 	ShaderProgram::unbind();
 }
 
-void FlowMap::drawArrows() const
+void FlowMap::drawArrows(glm::ivec2 const& screenSize) const
 {
 	if (!_drawArrowsShader.isValid())
 		return;
@@ -246,9 +246,16 @@ void FlowMap::drawArrows() const
 	TextureBinder textureBinder;
 	textureBinder.bindTexture(_drawArrowsShader, "flowBuffer", currBufferId());
 
+	GLuint screenULoc = _drawArrowsShader.getUniformLocation("screenSize");
+	if (screenULoc != ShaderProgram::nullLocation) {
+		GLCHECK(glUniform2f(screenULoc, screenSize.x, screenSize.y));
+	}
 	GLuint sizeULoc = _drawArrowsShader.getUniformLocation("arrowSize");
 	if (sizeULoc != ShaderProgram::nullLocation) {
-		GLCHECK(glUniform1f(sizeULoc, .7f / static_cast<float>(_nbArrows.x)));
+		glm::vec2 spacing = glm::vec2(screenSize.x, screenSize.y) / glm::vec2(_nbArrows.x, _nbArrows.y);
+		float resize = std::min(spacing.x, spacing.y);
+		glm::vec2 arrowSize = glm::vec2(1.2, .5) * resize;
+		GLCHECK(glUniform2f(sizeULoc, arrowSize.x, arrowSize.y));
 	}
 	GLCHECK(glDisable(GL_DEPTH_TEST));
 	GLCHECK(glDisable(GL_BLEND));

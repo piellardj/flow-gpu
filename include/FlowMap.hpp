@@ -28,7 +28,7 @@ public:
 	void reset(float factor);
 
 	void drawMap() const;
-	void drawArrows() const;
+	void drawArrows(glm::ivec2 const& screenSize) const;
 
 	GLuint getTextureId() const { return currBufferId(); }
 

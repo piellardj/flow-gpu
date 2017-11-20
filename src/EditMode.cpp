@@ -45,7 +45,7 @@ void EditMode::display() const
 		_flowMap->drawMap();
 	}
 	if (showArrows()) {
-		_flowMap->drawArrows();
+		_flowMap->drawArrows(_screenSize);
 	}
 	if (showBrush()) {
 		_brush.display(_screenSize, iMousePos());

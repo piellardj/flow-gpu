@@ -1,10 +1,10 @@
 #version 330
-#define PI 3.14159265359
 
+
+uniform vec2 screenSize; //in pixels
+uniform vec2 arrowSize; //in pixels
 
 uniform sampler2D flowBuffer;
-
-uniform float arrowSize;
 
 layout(location = 0) in vec2 vert;
 layout(location = 1) in vec2 pos;
@@ -29,6 +29,6 @@ void main()
 	flow = flow / strength;
 	float c = flow.x, s = flow.y;
 	
-	vec2 size = arrowSize * vec2(strength);
-	gl_Position = vec4(pos + rotateVector(size*vert, c, s), 0, 1);
+	vec2 localVert = strength * arrowSize * vert; //in pixels
+	gl_Position = vec4(pos + rotateVector(localVert, c, s) / screenSize, 0, 1);
 }
