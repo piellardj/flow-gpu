@@ -56,14 +56,6 @@ PlayMode::PlayMode(std::vector<LevelFilename> const& lvlFilenames, sf::Window co
 	_picking.lock();
 }
 
-
-void PlayMode::update(float time)
-{
-	for (Level const& lvl : _levels) {
-		lvl.particles->update(*lvl.flowMap, *lvl.background, time);
-	}
-}
-
 void PlayMode::display() const
 {
 	for (Level const& lvl : _levels) {
@@ -87,6 +79,13 @@ void PlayMode::mouseMoved(glm::vec2 const& movement)
 	/*for (Level const& lvl : _levels) {
 		lvl.flowMap->addFlow(mousePos(), movement);
 	}*/
+}
+
+void PlayMode::doUpdate(float time, float dt)
+{
+	for (Level const& lvl : _levels) {
+		lvl.particles->update(*lvl.flowMap, *lvl.background, time);
+	}
 }
 
 void PlayMode::doHandleEvent(sf::Event const& event)

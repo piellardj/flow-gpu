@@ -47,6 +47,12 @@ void Mode::handleEvent(sf::Event const& event, sf::Window const& window)
 	}
 }
 
+void Mode::update(float time)
+{
+	doUpdate(time, _lastUpdate - time);
+	_lastUpdate = time;
+}
+
 void Mode::retrieveMousePos(sf::Window const& window)
 {
 	sf::Vector2i pos = sf::Mouse::getPosition(window);

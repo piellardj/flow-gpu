@@ -15,7 +15,7 @@ public:
 	virtual ~Mode() {}
 
 	void handleEvent(sf::Event const& event, sf::Window const& window);
-	virtual void update(float time) = 0;
+	void update(float time);
 	virtual void display() const = 0;
 
 protected:
@@ -27,6 +27,7 @@ protected:
 
 private:
 	virtual void mouseMoved(glm::vec2 const& movement) = 0;
+	virtual void doUpdate(float time, float dt) = 0;
 	virtual void doHandleEvent(sf::Event const& event) = 0;
 
 	void retrieveMousePos(sf::Window const& window);
@@ -34,6 +35,8 @@ private:
 private:
 	glm::ivec2 _iMousePos;
 	glm::vec2 _fMousePos;
+
+	float _lastUpdate;
 
 	bool _showArrows; //A
 	bool _showBackground; //B

@@ -36,10 +36,6 @@ void EditMode::setBackground(std::string const& filename)
 	}
 }
 
-void EditMode::update(float time)
-{
-}
-
 void EditMode::display() const
 {
 	if (_background && showBackground()) {
@@ -59,6 +55,10 @@ void EditMode::display() const
 void EditMode::mouseMoved(glm::vec2 const& movement)
 {
 	_flowMap->addFlow(mousePos(), movement, _brushSize);
+}
+
+void EditMode::doUpdate(float time, float dt)
+{
 }
 
 void EditMode::doHandleEvent(sf::Event const& event)

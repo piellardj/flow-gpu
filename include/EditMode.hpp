@@ -19,11 +19,11 @@ public:
 
 	void setBackground(std::string const& filename);
 
-	virtual void update(float time);
 	virtual void display() const;
 
 private:
 	virtual void mouseMoved(glm::vec2 const& movement);
+	virtual void doUpdate(float time, float dt);
 	virtual void doHandleEvent(sf::Event const& event);
 
 private:
