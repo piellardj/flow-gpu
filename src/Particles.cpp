@@ -196,10 +196,9 @@ Particles::~Particles()
 	GLCHECK(glDeleteBuffers(1, &_strokeCornersVBO));
 }
 
-void Particles::update(FlowMap& flowMap, Background& background, float elapsedTimeSinceStart)
+void Particles::update(FlowMap& flowMap, Background& background, float time, float dt)
 {
-	const float dt = elapsedTimeSinceStart - _lastUpdate;
-	_lastUpdate = elapsedTimeSinceStart;
+	_lastUpdate = time;
 
 	if (!_updateShader.isValid())
 		return;
@@ -234,7 +233,7 @@ void Particles::update(FlowMap& flowMap, Background& background, float elapsedTi
 
 	GLuint clockULoc = _updateShader.getUniformLocation("clock");
 	if (clockULoc != ShaderProgram::nullLocation) {
-		GLCHECK(glUniform1f(clockULoc, elapsedTimeSinceStart));
+		GLCHECK(glUniform1f(clockULoc, time));
 	}
 
 	GLCHECK(glDisable(GL_DEPTH_TEST));

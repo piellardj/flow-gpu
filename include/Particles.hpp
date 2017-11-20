@@ -20,7 +20,7 @@ public:
 	Particles(std::vector<glm::vec2> const& initPos);
 	virtual ~Particles();
 
-	void update(FlowMap& flowMap, Background& background, float elapsedTimeSinceStart);
+	void update(FlowMap& flowMap, Background& background, float time, float dt);
 	void draw(unsigned int level) const;
 
 	unsigned int nbParticles() const;
