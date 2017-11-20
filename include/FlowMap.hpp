@@ -23,6 +23,8 @@ public:
 	
 	void addFlow(glm::vec2 const& pos, glm::vec2 const& flow, float brushSize=0.1f);
 
+	void reset(float factor);
+
 	void drawMap() const;
 	void drawArrows() const;
 
@@ -39,6 +41,7 @@ private:
 
 	GLuint _emptyVAO = 0u;
 	GLuint _updateFBO = 0u;
+	GLuint _initTexture = 0u;
 	std::array<GLuint, 2> _flowTexture;
 	unsigned int _currBufferNo; // in 0.._buffersId.size()-1
 
@@ -49,6 +52,7 @@ private:
 	mutable ShaderProgram _drawMapShader;
 	mutable ShaderProgram _drawArrowsShader;
 	mutable ShaderProgram _addShader;
+	mutable ShaderProgram _resetShader;
 };
 
 

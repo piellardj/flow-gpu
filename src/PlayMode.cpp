@@ -74,17 +74,20 @@ void PlayMode::mouseMoved(glm::vec2 const& movement)
 	if (_lastLevelPicked < _levels.size()) {
 		_levels[_lastLevelPicked].flowMap->addFlow(mousePos(), movement);
 	}
-	//_picking.getLevel(mousePos());
-
-	/*for (Level const& lvl : _levels) {
-		lvl.flowMap->addFlow(mousePos(), movement);
-	}*/
 }
 
 void PlayMode::doUpdate(float time, float dt)
 {
 	for (Level const& lvl : _levels) {
-		lvl.particles->update(*lvl.flowMap, *lvl.background, time);
+		lvl.particles->update(*lvl.flowMap, *lvl.background, time, dt);
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)) {
+		dt = std::max(0.01f, std::min(0.5f, dt));
+
+		for (Level const& lvl : _levels) {
+			lvl.flowMap->reset(2.f * dt);// dt * 20.f);
+		}
 	}
 }
 

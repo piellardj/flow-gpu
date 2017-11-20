@@ -13,6 +13,7 @@ FlowMap::FlowMap(glm::uvec2 const& bufferSize, std::vector<glm::vec2> flowBuffer
 	_nbArrows(30u,30u),
 	_emptyVAO(0u),
 	_updateFBO(0u),
+	_initTexture(0u),
 	_flowTexture({ 0u,0u }),
 	_currBufferNo(0u),
 	_arrowsVAO(0u),
@@ -42,6 +43,14 @@ FlowMap::FlowMap(glm::uvec2 const& bufferSize, std::vector<glm::vec2> flowBuffer
 			std::cout << "FlowMap: provided buffer was not of the right size (expected " << expectedSize << ", received " << flowBuffer.size() << ")." << std::endl;
 			flowBuffer.resize(bufferSize.x * bufferSize.y, glm::vec2(0.001f, 0.f));
 		}
+
+		GLCHECK(glGenTextures(1, &_initTexture));
+		GLCHECK(glBindTexture(GL_TEXTURE_2D, _initTexture));
+		GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, _bufferSize.x, _bufferSize.y, 0, GL_RG, GL_FLOAT, flowBuffer.data()));
+		GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+		GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+		GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+		GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
 		GLCHECK(glGenTextures(_flowTexture.size(), _flowTexture.data()));
 		for (GLuint& bufferId : _flowTexture) {
@@ -91,13 +100,16 @@ FlowMap::FlowMap(glm::uvec2 const& bufferSize, std::vector<glm::vec2> flowBuffer
 	}
 
 	/* Shaders loading */
-	if (!_addShader.loadFromFile("shaders/flowBufferAdd.vert", "shaders/flowBufferAdd.frag")) {
-		std::cerr << "Error: unable to load shader flowBufferUpdate" << std::endl;
-	}
 	if (!_drawMapShader.loadFromFile("shaders/flowBufferDisplay.vert", "shaders/flowBufferDisplay.frag")) {
 		std::cerr << "Error: unable to load shader flowBufferDisplay" << std::endl;
 	}
 	if (!_drawArrowsShader.loadFromFile("shaders/flowBufferDraw.vert", "shaders/flowBufferDraw.frag")) {
+		std::cerr << "Error: unable to load shader flowBufferDraw" << std::endl;
+	}
+	if (!_addShader.loadFromFile("shaders/flowBufferAdd.vert", "shaders/flowBufferAdd.frag")) {
+		std::cerr << "Error: unable to load shader flowBufferUpdate" << std::endl;
+	}
+	if (!_resetShader.loadFromFile("shaders/flowBufferReset.vert", "shaders/flowBufferReset.frag")) {
 		std::cerr << "Error: unable to load shader flowBufferDraw" << std::endl;
 	}
 }
@@ -106,6 +118,7 @@ FlowMap::~FlowMap()
 {
 	GLCHECK(glDeleteVertexArrays(1, &_emptyVAO));
 	GLCHECK((glDeleteFramebuffers(1, &_updateFBO)));
+	GLCHECK((glDeleteTextures(1, &_initTexture)));
 	GLCHECK((glDeleteTextures(_flowTexture.size(), _flowTexture.data())));
 
 	GLCHECK(glDeleteVertexArrays(1, &_arrowsVAO));
@@ -156,6 +169,43 @@ void FlowMap::addFlow(glm::vec2 const& pos, glm::vec2 const& flow, float brushSi
 	GLuint brushPosULoc = _addShader.getUniformLocation("brushPos");
 	if (brushPosULoc != ShaderProgram::nullLocation) {
 		GLCHECK(glUniform2f(brushPosULoc, pos.x, pos.y));
+	}
+
+	GLCHECK(glDisable(GL_BLEND));
+	GLCHECK(glBindVertexArray(_emptyVAO));
+	GLCHECK(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
+	GLCHECK(glBindVertexArray(0));
+
+	ShaderProgram::unbind();
+	GLCHECK(glBindFramebuffer(GL_FRAMEBUFFER, previousFramebufferId));
+}
+
+void FlowMap::reset(float factor)
+{
+	if (!_resetShader.isValid())
+		return;
+
+	switchBuffer();
+
+	GLint previousFramebufferId = 0;
+	GLCHECK(glGetIntegerv(GL_FRAMEBUFFER_BINDING, &previousFramebufferId));
+
+	/* FBO setup */
+	GLCHECK(glBindFramebuffer(GL_FRAMEBUFFER, _updateFBO));
+	GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, currBufferId(), 0));
+	GLCHECK(glViewport(0, 0, _bufferSize.x, _bufferSize.y));
+	GLCHECK(glClear(GL_COLOR_BUFFER_BIT));
+
+	ShaderProgram::bind(_resetShader);
+
+	/* Uniforms setup */
+	TextureBinder textureBinder;
+	textureBinder.bindTexture(_resetShader, "previousBuffer", prevBufferId());
+	textureBinder.bindTexture(_resetShader, "initBuffer", _initTexture);
+
+	GLuint factorULoc = _resetShader.getUniformLocation("factor");
+	if (factorULoc != ShaderProgram::nullLocation) {
+		GLCHECK(glUniform1f(factorULoc, factor));
 	}
 
 	GLCHECK(glDisable(GL_BLEND));
