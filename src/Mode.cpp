@@ -49,7 +49,7 @@ void Mode::handleEvent(sf::Event const& event, sf::Window const& window)
 
 void Mode::update(float time)
 {
-	doUpdate(time, _lastUpdate - time);
+	doUpdate(time, time - _lastUpdate);
 	_lastUpdate = time;
 }
 
