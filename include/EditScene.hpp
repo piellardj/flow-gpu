@@ -5,6 +5,7 @@
 #include "Scene.hpp"
 #include "FlowMap.hpp"
 #include "Background.hpp"
+#include "Particles.hpp"
 
 #include <string>
 #include <memory>
@@ -30,6 +31,7 @@ private:
 
 	std::unique_ptr<FlowMap> _flowMap;
 	std::unique_ptr<Background> _background;
+	std::unique_ptr<Particles> _particles;
 };
 
 #endif // EDIT_MODE_HPP_INCLUDED

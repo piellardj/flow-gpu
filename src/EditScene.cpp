@@ -3,47 +3,63 @@
 
 #include "GLHelper.hpp"
 #include "IO.hpp"
+#include "DensityMap.hpp"
 
 #include <SFML/Graphics/Image.hpp>
+#include <iostream>
 
 
 EditScene::EditScene(std::string const& saveFilename, sf::Window const& window, std::string const& flowmapFilename):
 	Scene(window),
 	_saveFilename(saveFilename)
 {
-	glm::uvec2 bufferSize(128, 128);
-	std::vector<glm::vec2> buffer(bufferSize.x * bufferSize.y, glm::vec2(0.f));
+	glm::uvec2 flowSize;
+	std::vector<glm::vec2> flowBuffer;
 
-	if (flowmapFilename != "") {
-		if (!IO::loadFlowMap(flowmapFilename, bufferSize, buffer)) {
-			bufferSize = glm::uvec2(128u, 128u);
-			buffer.resize(bufferSize.x * bufferSize.y, glm::vec2(0.f));
-		}
+	if (IO::loadFlowMap(flowmapFilename, flowSize, flowBuffer)) {
+		std::cout << "Loaded flow map '" << flowmapFilename << "'" << std::endl;
+	}
+	else {
+		flowSize = glm::uvec2(128u, 128u);
+		flowBuffer.resize(flowSize.x * flowSize.y, glm::vec2(0.f));
 	}
 
-	_flowMap.reset(new FlowMap(bufferSize, buffer));
+	_flowMap.reset(new FlowMap(flowSize, flowBuffer));
 }
 
 void EditScene::setBackground(std::string const& filename)
 {
-	glm::uvec2 bufferSize;
-	std::vector<uint8_t> buffer;
-	if (IO::load32bitImage(filename, bufferSize, buffer)) {
-		_background.reset(new Background(bufferSize, buffer));
+	glm::uvec2 backgroundSize;
+	std::vector<uint8_t> backgroundBuffer;
+	if (IO::load32bitImage(filename, backgroundSize, backgroundBuffer)) {
+		std::cout << "Loaded background '" << filename << "'" << std::endl;
+
+		_background.reset(new Background(backgroundSize, backgroundBuffer));
+
+		std::vector<uint8_t> densityBuffer(backgroundSize.x * backgroundSize.y);
+		for (unsigned int i = 0u; i < densityBuffer.size(); ++i) {
+			densityBuffer[i] = backgroundBuffer[4u * i + 3];
+		}
+
+		DensityMap densityMap(backgroundSize, densityBuffer);
+		std::vector<glm::vec2> initPos = densityMap.sample(128*128);
+		_particles.reset(new Particles(initPos));
+		std::cout << "Generated " << _particles->nbParticles() << " particles\n" << std::endl;
 	}
 }
-
-#include <iostream>
 
 void EditScene::display() const
 {
 	if (_background && showBackground()) {
 		_background->display(0.6f);
 	}
-	if (showFlowMap()) {
+	if (_flowMap && showFlowMap()) {
 		_flowMap->drawMap();
 	}
-	if (showArrows()) {
+	if (_particles && !showParticles()) {
+		_particles->draw(_screenSize, 0u);
+	}
+	if (_flowMap && showArrows()) {
 		_flowMap->drawArrows(_screenSize);
 	}
 	if (showBrush()) {
@@ -66,6 +82,9 @@ void EditScene::mouseMoved(glm::ivec2 const& movement)
 
 void EditScene::doUpdate(float time, float dt)
 {
+	if (_particles && _background) {
+		_particles->update(_screenSize, *_flowMap, *_background, time, dt);
+	}
 }
 
 void EditScene::doHandleEvent(sf::Event const& event)
