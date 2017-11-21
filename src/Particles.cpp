@@ -28,6 +28,7 @@ static float random(float from = 0.f, float to = 1.f)
 
 Particles::Particles(std::vector<glm::vec2> const& initPos) :
 	_bufferSize(std::max(1u, (unsigned int)(std::sqrt(initPos.size())))),
+	_lifetime(5.f),
 	_lastUpdate(0.f),
 	_emptyVAO(0u),
 	_updateFBO(0u),
@@ -81,7 +82,7 @@ Particles::Particles(std::vector<glm::vec2> const& initPos) :
 	{
 		std::vector<GLfloat> birthdate(_bufferSize.x*_bufferSize.y);
 		for (float& t : birthdate) {
-			t = random(0.f, 5.f);
+			t = random(-_lifetime, 0.f) - _lifetime;
 		}
 		GLCHECK(glGenTextures(_birthdateTexture.size(), _birthdateTexture.data()));
 		for (GLuint& bufferId : _birthdateTexture) {
@@ -230,11 +231,14 @@ void Particles::update(glm::uvec2 const& screenSize, FlowMap& flowMap, Backgroun
 	if (screenULoc != ShaderProgram::nullLocation) {
 		GLCHECK(glUniform2f(screenULoc, screenSize.x, screenSize.y));
 	}
+	GLuint lifetimeULoc = _updateShader.getUniformLocation("lifetime");
+	if (lifetimeULoc != ShaderProgram::nullLocation) {
+		GLCHECK(glUniform1f(lifetimeULoc, _lifetime));
+	}
 	GLuint dtULoc = _updateShader.getUniformLocation("dt");
 	if (dtULoc != ShaderProgram::nullLocation) {
 		GLCHECK(glUniform1f(dtULoc, dt));
 	}
-
 	GLuint clockULoc = _updateShader.getUniformLocation("clock");
 	if (clockULoc != ShaderProgram::nullLocation) {
 		GLCHECK(glUniform1f(clockULoc, time));
@@ -266,6 +270,10 @@ void Particles::draw(glm::uvec2 const& screenSize, unsigned int layer) const
 	GLuint screenULoc = _drawShader.getUniformLocation("screenSize");
 	if (screenULoc != ShaderProgram::nullLocation) {
 		GLCHECK(glUniform2f(screenULoc, screenSize.x, screenSize.y));
+	}
+	GLuint lifetimeULoc = _drawShader.getUniformLocation("lifetime");
+	if (lifetimeULoc != ShaderProgram::nullLocation) {
+		GLCHECK(glUniform1f(lifetimeULoc, _lifetime));
 	}
 	GLuint clockULoc = _drawShader.getUniformLocation("clock");
 	if (clockULoc != ShaderProgram::nullLocation) {

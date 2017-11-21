@@ -1,7 +1,5 @@
 #version 330
 const float PI = 3.14159265359;
-const float LIFETIME = 5.0;
-const float BIRTHTIME = 1.0;
 
 
 uniform sampler2D previousPosBuffer;
@@ -13,6 +11,7 @@ uniform sampler2D colorBuffer;
 uniform sampler2D flowMap;
 
 uniform vec2 screenSize; //in pixels
+uniform float lifetime=5.0;
 uniform float maxSpeed=10.0; //in pixels / seconds
 uniform float dt; //in seconds
 uniform float clock; //in seconds
@@ -32,10 +31,10 @@ void main()
 	vec3 nextColor = prevLooks.rgb;
 	
 	float nextBirthdate = prevBirthdate;
-	if (clock - prevBirthdate > LIFETIME) {
+	if (clock - prevBirthdate > lifetime) {
 		prevPos = texelFetch(initPosBuffer, texelCoords, 0).rg;
 		nextColor = texture(colorBuffer, prevPos).rgb;
-		nextBirthdate = prevBirthdate + LIFETIME;
+		nextBirthdate = prevBirthdate + lifetime;
 	}
 	
 	vec2 flow = texture(flowMap, prevPos).rg;

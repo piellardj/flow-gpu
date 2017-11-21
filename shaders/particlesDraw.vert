@@ -1,6 +1,5 @@
 #version 330
 const float PI = 3.14159265359;
-const float LIFETIME = 5.0;
 const float BIRTH_ANIM_TIME = 1.0;
 const float DEATH_ANIM_TIME = 1.0;
 
@@ -12,6 +11,7 @@ uniform sampler2D posBuffer;
 uniform sampler2D looksBuffer;
 uniform sampler2D birthdateBuffer;
 
+uniform float lifetime=5.0;
 uniform float clock;
 
 layout(location = 0) in ivec2 texelCoords; //where to sample the particles buffer
@@ -40,7 +40,7 @@ void main()
 	float birthdate = texelFetch(birthdateBuffer, texelCoords, 0).r;
 	float age = clock - birthdate;
 	float birthSizeFactor = smoothstep(0.0, BIRTH_ANIM_TIME, age);
-	float deathSizeFactor = smoothstep(0.0, DEATH_ANIM_TIME, LIFETIME-age);
+	float deathSizeFactor = smoothstep(0.0, DEATH_ANIM_TIME, lifetime-age);
 	float sizeFactor = min(birthSizeFactor, deathSizeFactor);
 	
 	vec2 v = center + 0.5 * rotateVector(sizeFactor * strokeSize * corner, orientation) / screenSize;

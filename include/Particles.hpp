@@ -43,6 +43,7 @@ private:
 
 private:
 	const glm::uvec2 _bufferSize;
+	const float _lifetime;
 	float _lastUpdate;
 
 	GLuint _emptyVAO = 0u;
