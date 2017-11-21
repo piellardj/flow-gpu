@@ -1,7 +1,7 @@
-#include "Mode.hpp"
+#include "Scene.hpp"
 
 
-Mode::Mode(sf::Window const& window) :
+Scene::Scene(sf::Window const& window) :
 	_screenSize(window.getSize().x, window.getSize().y),
 	_brush(10.f, 100.f),
 	_showArrows(true),
@@ -13,7 +13,7 @@ Mode::Mode(sf::Window const& window) :
 	retrieveMousePos(window);
 }
 
-void Mode::handleEvent(sf::Event const& event, sf::Window const& window)
+void Scene::handleEvent(sf::Event const& event, sf::Window const& window)
 {
 	glm::ivec2 prevPos = _iMousePos;
 	retrieveMousePos(window);
@@ -54,18 +54,18 @@ void Mode::handleEvent(sf::Event const& event, sf::Window const& window)
 	}
 }
 
-void Mode::update(float time)
+void Scene::update(float time)
 {
 	doUpdate(time, time - _lastUpdate);
 	_lastUpdate = time;
 }
 
-glm::vec2 Mode::pixelToRelative(glm::ivec2 const& v) const
+glm::vec2 Scene::pixelToRelative(glm::ivec2 const& v) const
 {
 	return glm::vec2(v.x, v.y) / glm::vec2(_screenSize.x, _screenSize.y);
 }
 
-void Mode::retrieveMousePos(sf::Window const& window)
+void Scene::retrieveMousePos(sf::Window const& window)
 {
 	sf::Vector2i pos = sf::Mouse::getPosition(window);
 	_iMousePos = glm::ivec2(pos.x, static_cast<int>(window.getSize().y) - pos.y);

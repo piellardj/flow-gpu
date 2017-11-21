@@ -1,4 +1,4 @@
-#include "PlayMode.hpp"
+#include "PlayScene.hpp"
 
 
 #include "GLHelper.hpp"
@@ -9,8 +9,8 @@
 #include <SFML/Graphics/Image.hpp>
 
 
-PlayMode::PlayMode(std::vector<LayerDescription> const& description, sf::Window const& window) :
-	Mode(window),
+PlayScene::PlayScene(std::vector<LayerDescription> const& description, sf::Window const& window) :
+	Scene(window),
 	_picking(glm::uvec2(window.getSize().x, window.getSize().y))
 {
 	for (unsigned int iL = 0u; iL < description.size(); ++iL) {
@@ -57,7 +57,7 @@ PlayMode::PlayMode(std::vector<LayerDescription> const& description, sf::Window 
 	_picking.lock();
 }
 
-void PlayMode::display() const
+void PlayScene::display() const
 {
 	for (Layer const& lvl : _layers) {
 		if (lvl.background && showBackground()) {
@@ -76,7 +76,7 @@ void PlayMode::display() const
 	}
 }
 
-void PlayMode::mouseMoved(glm::ivec2 const& movement)
+void PlayScene::mouseMoved(glm::ivec2 const& movement)
 {
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 		glm::vec2 relativeMovement = glm::vec2(movement.x, movement.y) / glm::vec2(_screenSize.x, _screenSize.y);
@@ -88,7 +88,7 @@ void PlayMode::mouseMoved(glm::ivec2 const& movement)
 	}
 }
 
-void PlayMode::doUpdate(float time, float dt)
+void PlayScene::doUpdate(float time, float dt)
 {
 	for (Layer const& lvl : _layers) {
 		lvl.particles->update(_screenSize, *lvl.flowMap, *lvl.background, time, dt);
@@ -103,7 +103,7 @@ void PlayMode::doUpdate(float time, float dt)
 	}
 }
 
-void PlayMode::doHandleEvent(sf::Event const& event)
+void PlayScene::doHandleEvent(sf::Event const& event)
 {
 	switch (event.type) {
 	case sf::Event::MouseButtonPressed:

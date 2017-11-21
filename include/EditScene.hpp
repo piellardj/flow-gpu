@@ -2,7 +2,7 @@
 #define EDIT_MODE_HPP_INCLUDED
 
 
-#include "Mode.hpp"
+#include "Scene.hpp"
 #include "FlowMap.hpp"
 #include "Background.hpp"
 
@@ -10,11 +10,11 @@
 #include <memory>
 
 
-class EditMode: public Mode
+class EditScene: public Scene
 {
 public:
-	EditMode(std::string const& saveFilename, sf::Window const& window, std::string const& flowmapFilename="");
-	virtual ~EditMode() {}
+	EditScene(std::string const& saveFilename, sf::Window const& window, std::string const& flowmapFilename="");
+	virtual ~EditScene() {}
 
 	void setBackground(std::string const& filename);
 

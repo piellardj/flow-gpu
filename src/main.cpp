@@ -6,8 +6,8 @@
 #include <GL/glew.h>
 #include <SFML/OpenGL.hpp>
 
-#include "EditMode.hpp"
-#include "PlayMode.hpp"
+#include "EditScene.hpp"
+#include "PlayScene.hpp"
 
 
 static void initGLEW()
@@ -36,25 +36,25 @@ int main()
 	std::cout << "Using OpenGL renderer: " << glGetString(GL_RENDERER) << std::endl;
 	std::cout << "Using GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl << std::endl;
 
-	std::unique_ptr<Mode> mode;
+	std::unique_ptr<Scene> mode;
 	const std::string flowmapStr = "rc/portrait/layer1_flowmap.txt";
 	const std::string backStr = "rc/portrait/layer1_background.png";
 
-#define EDIT
+//#define EDIT
 #ifdef EDIT
 	{
-		std::unique_ptr<EditMode> tmp;
-		tmp.reset(new EditMode(flowmapStr, window, flowmapStr));
+		std::unique_ptr<EditScene> tmp;
+		tmp.reset(new EditScene(flowmapStr, window, flowmapStr));
 		tmp->setBackground(backStr);
 		mode = std::move(tmp);
 	}
 #else
-	std::vector<PlayMode::LayerDescription> filenames;
+	std::vector<PlayScene::LayerDescription> filenames;
 	filenames.emplace_back("rc/portrait/layer0_background.png", "rc/portrait/layer0_flowmap.txt", 256);
 	filenames.emplace_back("rc/portrait/layer1_background.png", "rc/portrait/layer1_flowmap.txt", 150);
 	filenames.emplace_back("rc/portrait/layer2_background.png", "rc/portrait/layer2_flowmap.txt", 128);
 	filenames.emplace_back("rc/portrait/layer3_background.png", "rc/portrait/layer3_flowmap.txt", 192);
-	mode.reset(new PlayMode(filenames, window));
+	mode.reset(new PlayScene(filenames, window));
 #endif
 
 	bool running = true;

@@ -9,11 +9,11 @@
 #include "Brush.hpp"
 
 
-class Mode
+class Scene
 {
 public:
-	Mode(sf::Window const& window);
-	virtual ~Mode() {}
+	Scene(sf::Window const& window);
+	virtual ~Scene() {}
 
 	void handleEvent(sf::Event const& event, sf::Window const& window);
 	void update(float time);

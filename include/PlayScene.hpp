@@ -2,7 +2,7 @@
 #define PLAY_MODE_HPP_INCLUDED
 
 
-#include "Mode.hpp"
+#include "Scene.hpp"
 #include "FlowMap.hpp"
 #include "Background.hpp"
 #include "Particles.hpp"
@@ -13,7 +13,7 @@
 #include <memory>
 
 
-class PlayMode : public Mode
+class PlayScene : public Scene
 {
 public:
 	struct LayerDescription
@@ -29,8 +29,8 @@ public:
 		const unsigned int sqNbParticles;
 	};
 
-	PlayMode(std::vector<LayerDescription> const& description, sf::Window const& window);
-	virtual ~PlayMode() {}
+	PlayScene(std::vector<LayerDescription> const& description, sf::Window const& window);
+	virtual ~PlayScene() {}
 
 	virtual void display() const;
 
