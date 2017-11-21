@@ -11,11 +11,15 @@
 #include "ShaderProgram.hpp"
 
 
+/*! \class Brush
+ * \brief Class for displaying and handling a 2D brush and its radius.
+ * The brush is only cosmetic.
+ */
 class Brush: public NonCopyable
 {
 public:
 	/*! Constructor
-	 * The radius is in pixels. */
+	 * The radiuses are in pixels. */
 	Brush(float minRadius, float maxRadius, unsigned int nbSteps=10u);
 	virtual ~Brush();
 

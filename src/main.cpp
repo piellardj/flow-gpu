@@ -40,7 +40,7 @@ int main()
 	const std::string flowmapStr = "rc/portrait/layer1_flowmap.txt";
 	const std::string backStr = "rc/portrait/layer1_background.png";
 
-//#define EDIT
+#define EDIT
 #ifdef EDIT
 	{
 		std::unique_ptr<EditMode> tmp;

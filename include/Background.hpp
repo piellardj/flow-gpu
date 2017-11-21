@@ -12,13 +12,21 @@
 #include "NonCopyable.hpp"
 
 
+/*! \class Background
+ * \brief Stores and displays a 32bit 2D bit texture
+ */
 class Background: public NonCopyable
 {
 public:
-	Background(glm::uvec2 const& bufferSize, std::vector<uint8_t> const& buffer);
+	/*! Constructor
+	 * If the parameters are invalid (size not matching, empty buffer...),
+	 * a default 1x1 texture is used.
+	 * \param buffer channels order: RGBA
+	 */
+	Background(glm::uvec2& bufferSize, std::vector<uint8_t> const& buffer);
 	virtual ~Background();
 
-	void display(float brightness=1.f) const;
+	void display(float alpha=1.f) const;
 
 	inline GLuint textureId() { return _backgroundTexture; }
 

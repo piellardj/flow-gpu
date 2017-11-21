@@ -1,6 +1,7 @@
 #ifndef PARTICLES_HPP_INCLUDED
 #define PARTICLES_HPP_INCLUDED
 
+
 #include "NonCopyable.hpp"
 
 #include "glm.hpp"
@@ -14,12 +15,22 @@
 
 class FlowMap;
 class Background;
+/*! \class Particles
+ * Class for managing and displaying particles.
+ * The particles move according to a vector field (FlowMap).
+ * The particles have a limited lifetime, after which they are reset to the initial position.
+ */
 class Particles: public NonCopyable
 {
 public:
+	/*! \param initPos : Normalized initial positions.
+	 *                   If the vector's size is not a square number, the last positions will not be used.
+	 */
 	Particles(std::vector<glm::vec2> const& initPos);
 	virtual ~Particles();
 
+	/*! \param time : elapsed time since the start of the simulation
+	 * \param dt : elapsed time since last update */
 	void update(glm::uvec2 const& screenSize, FlowMap& flowMap, Background& background, float time, float dt);
 	void draw(glm::uvec2 const& screenSize, unsigned int layer) const;
 

@@ -14,12 +14,6 @@
 #include <ctime>
 
 
-static glm::uvec2 computeBufferSize(unsigned int minAmount)
-{
-	unsigned int sq = static_cast<unsigned int>(std::ceil(std::sqrt(minAmount)));
-	return glm::uvec2(sq,sq);// 32, 32);
-}
-
 static float random(float from = 0.f, float to = 1.f)
 {
 	static bool firstTime = true;
@@ -33,7 +27,7 @@ static float random(float from = 0.f, float to = 1.f)
 }
 
 Particles::Particles(std::vector<glm::vec2> const& initPos) :
-	_bufferSize(computeBufferSize(initPos.size())),
+	_bufferSize(std::max(1u, (unsigned int)(std::sqrt(initPos.size())))),
 	_lastUpdate(0.f),
 	_emptyVAO(0u),
 	_updateFBO(0u),
@@ -46,6 +40,12 @@ Particles::Particles(std::vector<glm::vec2> const& initPos) :
 	_texelsVBO(0u),
 	_strokeTexture(0u)
 {
+	const std::vector<glm::vec2> defaultInitPos(1, glm::vec2(0.5f,0.5f));
+	std::vector<glm::vec2> const* initPosPtr = &initPos;
+	if (initPos.empty()) {
+		initPosPtr = &defaultInitPos;
+	}
+
 	/* VAO creation */
 	GLCHECK(glGenVertexArrays(1, &_emptyVAO));
 

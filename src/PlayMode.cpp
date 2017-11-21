@@ -50,7 +50,7 @@ PlayMode::PlayMode(std::vector<LayerDescription> const& description, sf::Window 
 		}
 
 		unsigned int nbParticles = lvlDescription.sqNbParticles * lvlDescription.sqNbParticles;
-		std::vector<glm::vec2> initPos = lvl.densityMap->computeInitPos(std::max(0u, nbParticles));
+		std::vector<glm::vec2> initPos = lvl.densityMap->sample(std::max(0u, nbParticles));
 		lvl.particles.reset(new Particles(initPos));
 	}
 

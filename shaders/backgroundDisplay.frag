@@ -3,7 +3,7 @@
 
 uniform sampler2D backgroundTexture;
 
-uniform float brightness;
+uniform float alpha;
 
 in vec2 sampleCoords;
 
@@ -14,5 +14,5 @@ void main()
 {
 	vec4 texel = texture(backgroundTexture, sampleCoords);
 	
-	fragColor = vec4(brightness*texel.rgb, texel.a);
+	fragColor = vec4(texel.rgb, alpha * texel.a);
 }

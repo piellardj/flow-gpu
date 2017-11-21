@@ -10,10 +10,14 @@
 #include <memory>
 
 
+/*! \class PickingTexture
+ * Class for creating and sampling a picking texture, to determine which layer is being clicked on.
+ * Manages at most 255 layers.
+ */
 class PickingTexture: public NonCopyable
 {
 public:
-	static const uint8_t NO_LEVEL = 255u;
+	static const uint8_t NO_LAYER = 255u;
 
 public:
 	PickingTexture(glm::uvec2 const& resolution);

@@ -35,6 +35,9 @@ void Brush::changeRadius(float nbSteps)
 
 void Brush::display(glm::uvec2 const& screenSize, glm::ivec2 const& pos, bool onlyRing) const
 {
+	if (!_brushShader.isValid())
+		return;
+
 	ShaderProgram::bind(_brushShader);
 
 	GLuint ringULoc = _brushShader.getUniformLocation("onlyRing");

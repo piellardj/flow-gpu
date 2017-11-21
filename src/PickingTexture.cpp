@@ -8,7 +8,7 @@
 
 PickingTexture::PickingTexture(glm::uvec2 const& resolution):
 	_bufferSize(resolution),
-	_layerBuffer(resolution.x * resolution.y, PickingTexture::NO_LEVEL),
+	_layerBuffer(resolution.x * resolution.y, PickingTexture::NO_LAYER),
 	_locked(false),
 	_emptyVAO(0u),
 	_FBO(0u),
@@ -53,7 +53,7 @@ uint8_t PickingTexture::getLayer(glm::vec2 const& coords) const
 		coords.y * static_cast<float>(_bufferSize.y));
 
 	if (coords.x >= _bufferSize.x || coords.y >= _bufferSize.y)
-		return PickingTexture::NO_LEVEL;
+		return PickingTexture::NO_LAYER;
 
 	return _layerBuffer[iCoords.x + iCoords.y * _bufferSize.x];
 }

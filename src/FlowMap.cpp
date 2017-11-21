@@ -8,7 +8,7 @@
 #include <fstream>
 
 
-FlowMap::FlowMap(glm::uvec2 const& bufferSize, std::vector<glm::vec2> flowBuffer) :
+FlowMap::FlowMap(glm::uvec2 const& bufferSize, std::vector<glm::vec2> const& flowBuffer) :
 	_bufferSize(bufferSize),
 	_nbArrows(30u,30u),
 	_emptyVAO(0u),
@@ -20,6 +20,15 @@ FlowMap::FlowMap(glm::uvec2 const& bufferSize, std::vector<glm::vec2> flowBuffer
 	_arrowVBO(0u),
 	_arrowsPosVBO(0u)
 {
+	const glm::uvec2 defaultBufferSize(32u, 32u);
+	const std::vector<glm::vec2> defaultBuffer(defaultBufferSize.x * defaultBufferSize.y, glm::vec2(0.f, 0.f));
+
+	std::vector<glm::vec2> const* actualBuffer = &flowBuffer;
+	if (flowBuffer.empty() || flowBuffer.size() != bufferSize.x * bufferSize.y) {
+		_bufferSize = defaultBufferSize;
+		actualBuffer = &defaultBuffer;
+	}
+
 	/* VAO creation */
 	GLCHECK(glGenVertexArrays(1, &_emptyVAO));
 
@@ -38,24 +47,11 @@ FlowMap::FlowMap(glm::uvec2 const& bufferSize, std::vector<glm::vec2> flowBuffer
 
 	/* Buffers creation */
 	{
-		unsigned int expectedSize = bufferSize.x * bufferSize.y;
-		if (flowBuffer.size() != expectedSize) {
-			std::cout << "FlowMap: provided buffer was not of the right size (expected " << expectedSize << ", received " << flowBuffer.size() << ")." << std::endl;
-			flowBuffer.resize(bufferSize.x * bufferSize.y, glm::vec2(0.001f, 0.f));
-		}
-
-		GLCHECK(glGenTextures(1, &_initTexture));
-		GLCHECK(glBindTexture(GL_TEXTURE_2D, _initTexture));
-		GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, _bufferSize.x, _bufferSize.y, 0, GL_RG, GL_FLOAT, flowBuffer.data()));
-		GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-		GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-		GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-		GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-
-		GLCHECK(glGenTextures(_flowTexture.size(), _flowTexture.data()));
-		for (GLuint& bufferId : _flowTexture) {
-			GLCHECK(glBindTexture(GL_TEXTURE_2D, bufferId));
-			GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, _bufferSize.x, _bufferSize.y, 0, GL_RG, GL_FLOAT, flowBuffer.data()));
+		std::array<GLuint*, 3> textures = { &_initTexture, &_flowTexture[0], &_flowTexture[1] };
+		for (GLuint* texIdPtr : textures) {
+			GLCHECK(glGenTextures(1, texIdPtr));
+			GLCHECK(glBindTexture(GL_TEXTURE_2D, *texIdPtr));
+			GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, _bufferSize.x, _bufferSize.y, 0, GL_RG, GL_FLOAT, actualBuffer->data()));
 			GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 			GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 			GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
@@ -64,14 +60,12 @@ FlowMap::FlowMap(glm::uvec2 const& bufferSize, std::vector<glm::vec2> flowBuffer
 		GLCHECK(glBindTexture(GL_TEXTURE_2D, 0));
 	}
 
+	/* Arrows VBO and VAO creation */
 	{
 		GLCHECK(glGenVertexArrays(1, &_arrowsVAO));
 		GLCHECK(glBindVertexArray(_arrowsVAO));
 
-		std::vector<glm::vec2> vert;
-		vert.emplace_back(+0.f, -.5f);
-		vert.emplace_back(+1.f, +0.f);
-		vert.emplace_back(+0.f, +.5f);
+		std::vector<glm::vec2> vert = { {0,-.5}, {1,0}, {0,+.5} };
 		GLCHECK(glGenBuffers(1, &_arrowVBO));
 		GLCHECK(glBindBuffer(GL_ARRAY_BUFFER, _arrowVBO));
 		GLCHECK(glBufferData(GL_ARRAY_BUFFER, vert.size() * sizeof(glm::vec2), vert.data(), GL_STATIC_DRAW));
