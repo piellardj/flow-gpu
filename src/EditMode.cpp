@@ -79,6 +79,13 @@ void EditMode::doHandleEvent(sf::Event const& event)
 
 			IO::saveFlowMap(_saveFilename, bufferSize, buffer);
 		}
+	case sf::Event::MouseButtonPressed:
+		if (event.mouseButton.button == sf::Mouse::Right) {
+			glm::vec2 relativeMovement = glm::vec2(1);
+			glm::vec2 relativeBrushSize = 2.f * glm::vec2(brush().radius()) / glm::vec2(_screenSize.x, _screenSize.y);
+			_flowMap->changeLocally(mousePos(), relativeMovement, relativeBrushSize, true);
+		}
+			break;
 	default:
 		break;
 	}
