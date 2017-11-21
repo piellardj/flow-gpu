@@ -28,7 +28,7 @@ int main()
 		3, 3, //openGL 3.3 requested
 		sf::ContextSettings::Core);
 	sf::Window window;
-	window.create(sf::VideoMode(800, 800), "Flow", sf::Style::Titlebar | sf::Style::Close, openGL3DContext);
+	window.create(sf::VideoMode(1280, 720), "Flow", sf::Style::Titlebar | sf::Style::Close, openGL3DContext);
 	window.setVerticalSyncEnabled(true);
 	initGLEW();
 	
@@ -37,8 +37,8 @@ int main()
 	std::cout << "Using GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl << std::endl;
 
 	std::unique_ptr<Mode> mode;
-	const std::string flowmapStr = "rc/layer1_flowmap.txt";
-	const std::string backStr = "rc/layer1_background.png";
+	const std::string flowmapStr = "rc/portrait/layer1_flowmap.txt";
+	const std::string backStr = "rc/portrait/layer1_background.png";
 
 //#define EDIT
 #ifdef EDIT
@@ -49,10 +49,11 @@ int main()
 		mode = std::move(tmp);
 	}
 #else
-	std::vector<PlayMode::LayerFilename> filenames;
-	filenames.emplace_back("rc/layer0_background.png", "rc/layer0_flowmap.txt");
-	filenames.emplace_back("rc/layer1_background.png", "rc/layer1_flowmap.txt");
-	filenames.emplace_back("rc/layer2_background.png", "rc/layer2_flowmap.txt");
+	std::vector<PlayMode::LayerDescription> filenames;
+	filenames.emplace_back("rc/portrait/layer0_background.png", "rc/portrait/layer0_flowmap.txt", 256);
+	filenames.emplace_back("rc/portrait/layer1_background.png", "rc/portrait/layer1_flowmap.txt", 150);
+	filenames.emplace_back("rc/portrait/layer2_background.png", "rc/portrait/layer2_flowmap.txt", 128);
+	filenames.emplace_back("rc/portrait/layer3_background.png", "rc/portrait/layer3_flowmap.txt", 192);
 	mode.reset(new PlayMode(filenames, window));
 #endif
 

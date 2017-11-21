@@ -16,17 +16,20 @@
 class PlayMode : public Mode
 {
 public:
-	struct LayerFilename
+	struct LayerDescription
 	{
-		LayerFilename(std::string const& back, std::string const& flow) :
-			backgroundFilename(back), flowFilename(flow)
+		/*!
+		 * \param sqNb Square root of the wanted amount of particles for this layer */
+		LayerDescription(std::string const& back, std::string const& flow, unsigned int sqNb) :
+			backgroundFilename(back), flowFilename(flow), sqNbParticles(sqNb)
 		{}
 
-		std::string backgroundFilename;
-		std::string flowFilename;
+		const std::string backgroundFilename;
+		const std::string flowFilename;
+		const unsigned int sqNbParticles;
 	};
 
-	PlayMode(std::vector<LayerFilename> const& lvlFilenames, sf::Window const& window);
+	PlayMode(std::vector<LayerDescription> const& description, sf::Window const& window);
 	virtual ~PlayMode() {}
 
 	virtual void display() const;

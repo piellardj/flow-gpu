@@ -9,14 +9,14 @@
 #include <SFML/Graphics/Image.hpp>
 
 
-PlayMode::PlayMode(std::vector<LayerFilename> const& lvlFilenames, sf::Window const& window) :
+PlayMode::PlayMode(std::vector<LayerDescription> const& description, sf::Window const& window) :
 	Mode(window),
 	_picking(glm::uvec2(window.getSize().x, window.getSize().y))
 {
-	for (unsigned int iL = 0u; iL < lvlFilenames.size(); ++iL) {
+	for (unsigned int iL = 0u; iL < description.size(); ++iL) {
 		_layers.push_back(Layer());
 
-		LayerFilename const& names = lvlFilenames[iL];
+		LayerDescription const& lvlDescription = description[iL];
 		Layer& lvl = _layers.back();
 
 
@@ -25,7 +25,7 @@ PlayMode::PlayMode(std::vector<LayerFilename> const& lvlFilenames, sf::Window co
 			glm::uvec2 bufferSize;
 			std::vector<uint8_t> backgroundBuffer;
 
-			if (!IO::load32bitImage(names.backgroundFilename, bufferSize, backgroundBuffer)) {
+			if (!IO::load32bitImage(lvlDescription.backgroundFilename, bufferSize, backgroundBuffer)) {
 				bufferSize = glm::uvec2(1u, 1u);
 				backgroundBuffer.resize(4u, 128u);
 			}
@@ -45,11 +45,12 @@ PlayMode::PlayMode(std::vector<LayerFilename> const& lvlFilenames, sf::Window co
 		{
 			glm::uvec2 bufferSize;
 			std::vector<glm::vec2> buffer;
-			IO::loadFlowMap(names.flowFilename, bufferSize, buffer);
+			IO::loadFlowMap(lvlDescription.flowFilename, bufferSize, buffer);
 			lvl.flowMap.reset(new FlowMap(bufferSize, buffer));
 		}
 
-		std::vector<glm::vec2> initPos = lvl.densityMap->computeInitPos(200*200);
+		unsigned int nbParticles = lvlDescription.sqNbParticles * lvlDescription.sqNbParticles;
+		std::vector<glm::vec2> initPos = lvl.densityMap->computeInitPos(std::max(0u, nbParticles));
 		lvl.particles.reset(new Particles(initPos));
 	}
 
