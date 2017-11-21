@@ -79,6 +79,9 @@ void EditScene::doHandleEvent(sf::Event const& event)
 
 			IO::saveFlowMap(_saveFilename, bufferSize, buffer);
 		}
+		else if (event.key.code == sf::Keyboard::R) {
+			_flowMap->reset(1.f);
+		}
 	case sf::Event::MouseButtonPressed:
 		if (event.mouseButton.button == sf::Mouse::Right) {
 			glm::vec2 relativeMovement = glm::vec2(1);
