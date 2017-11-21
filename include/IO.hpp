@@ -16,6 +16,8 @@ namespace IO
 
 	bool loadFlowMap(std::string const& filename, glm::uvec2& bufferSize, std::vector<glm::vec2>& buffer);
 	bool saveFlowMap(std::string const& filename, glm::uvec2 const& bufferSize, std::vector<glm::vec2> const& buffer);
+
+	bool loadFileToStr(std::string const& filename, std::string& fileStr);
 }
 
 #endif // IO_INCLUDED_HPP

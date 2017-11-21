@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <sstream>
 
 #include <SFML/Graphics/Image.hpp>
 
@@ -66,7 +67,7 @@ namespace IO
 		std::ifstream file;
 		file.open(filename);
 		if (!file.is_open()) {
-			std::cout << "Failed: couldn't open file '" << filename << "'";
+			std::cerr << "Failed: couldn't open file '" << filename << "'";
 			bufferSize = glm::uvec2(0u);
 			buffer.clear();
 			return false;
@@ -77,7 +78,7 @@ namespace IO
 		buffer.resize(bufferSize.x * bufferSize.y);
 		for (glm::vec2& v : buffer) {
 			if (file.eof()) {
-				std::cout << "Failed: file '" << filename << "' is incomplete, aborting." << std::endl;
+				std::cerr << "Failed: file '" << filename << "' is incomplete, aborting." << std::endl;
 				bufferSize = glm::uvec2(0u);
 				buffer.clear();
 				file.close();
@@ -109,6 +110,20 @@ namespace IO
 
 		std::cout << "done!" << std::endl;
 
+		return true;
+	}
+
+	bool loadFileToStr(std::string const& filename, std::string& fileStr)
+	{
+		std::ifstream t(filename);
+		if (!t.is_open()) {
+			std::cerr << "Failed: couldn't open file '" << filename << "'" << std::endl;
+			return false;
+		}
+
+		std::stringstream buffer;
+		buffer << t.rdbuf();
+		fileStr = buffer.str();
 		return true;
 	}
 }
