@@ -24,7 +24,7 @@ PlayScene::PlayScene(std::vector<LayerDescription> const& description, sf::Windo
 		glm::uvec2 backgroundSize;
 		std::vector<uint8_t> backgroundBuffer;
 		if (IO::load32bitImage(lvlDescription.backgroundFilename, backgroundSize, backgroundBuffer)) {
-			std::cout << "Loaded background '" << lvlDescription.backgroundFilename << "\n";
+			std::cout << "Loaded background '" << lvlDescription.backgroundFilename << "'\n";
 		}
 		else {
 			backgroundSize = glm::uvec2(1u, 1u);
@@ -34,7 +34,7 @@ PlayScene::PlayScene(std::vector<LayerDescription> const& description, sf::Windo
 		glm::uvec2 flowSize;
 		std::vector<glm::vec2> flowBuffer;
 		if (IO::loadFlowMap(lvlDescription.flowFilename, flowSize, flowBuffer)) {
-			std::cout << "Loaded flow map '" << lvlDescription.flowFilename << "\n";
+			std::cout << "Loaded flow map '" << lvlDescription.flowFilename << "'\n";
 		}
 		else {
 			flowSize = glm::uvec2(32u, 32u);
@@ -60,7 +60,7 @@ PlayScene::PlayScene(std::vector<LayerDescription> const& description, sf::Windo
 		unsigned int nbParticles = lvlDescription.sqNbParticles * lvlDescription.sqNbParticles;
 		std::vector<glm::vec2> initPos = lvl.densityMap->sample(std::max(0u, nbParticles));
 		lvl.particles.reset(new Particles(initPos));
-		std::cout << "Generated " << nbParticles << " particles\n" << std::endl;
+		std::cout << "Generated " << lvl.particles->nbParticles() << " particles\n" << std::endl;
 	}
 
 	_picking.lock();
