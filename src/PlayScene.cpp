@@ -19,39 +19,48 @@ PlayScene::PlayScene(std::vector<LayerDescription> const& description, sf::Windo
 		LayerDescription const& lvlDescription = description[iL];
 		Layer& lvl = _layers.back();
 
+		std::cout << "=== Loading layer " << iL << " ===\n";
+		
+		glm::uvec2 backgroundSize;
+		std::vector<uint8_t> backgroundBuffer;
+		if (IO::load32bitImage(lvlDescription.backgroundFilename, backgroundSize, backgroundBuffer)) {
+			std::cout << "Loaded background '" << lvlDescription.backgroundFilename << "\n";
+		}
+		else {
+			backgroundSize = glm::uvec2(1u, 1u);
+			backgroundBuffer.resize(4u, 128u);
+		}
+
+		glm::uvec2 flowSize;
+		std::vector<glm::vec2> flowBuffer;
+		if (IO::loadFlowMap(lvlDescription.flowFilename, flowSize, flowBuffer)) {
+			std::cout << "Loaded flow map '" << lvlDescription.flowFilename << "\n";
+		}
+		else {
+			flowSize = glm::uvec2(32u, 32u);
+			flowBuffer.resize(flowSize.x * flowSize.y, glm::uvec2(0.f, 0.f));
+		}
 
 		/* Background loading */
 		{
-			glm::uvec2 bufferSize;
-			std::vector<uint8_t> backgroundBuffer;
-
-			if (!IO::load32bitImage(lvlDescription.backgroundFilename, bufferSize, backgroundBuffer)) {
-				bufferSize = glm::uvec2(1u, 1u);
-				backgroundBuffer.resize(4u, 128u);
-			}
-
-			lvl.background.reset(new Background(bufferSize, backgroundBuffer));
+			lvl.background.reset(new Background(backgroundSize, backgroundBuffer));
 			_picking.addBackground(*lvl.background, iL);
 
-			std::vector<uint8_t> density(bufferSize.x * bufferSize.y);
+			std::vector<uint8_t> density(backgroundSize.x * backgroundSize.y);
 			for (unsigned int i = 0u; i < density.size(); ++i) {
 				density[i] = backgroundBuffer[4u * i + 3];
 			}
 
-			lvl.densityMap.reset(new DensityMap(bufferSize, density));
+			lvl.densityMap.reset(new DensityMap(backgroundSize, density));
 		}
 
 		/* Flow map loading */
-		{
-			glm::uvec2 bufferSize;
-			std::vector<glm::vec2> buffer;
-			IO::loadFlowMap(lvlDescription.flowFilename, bufferSize, buffer);
-			lvl.flowMap.reset(new FlowMap(bufferSize, buffer));
-		}
+		lvl.flowMap.reset(new FlowMap(flowSize, flowBuffer));
 
 		unsigned int nbParticles = lvlDescription.sqNbParticles * lvlDescription.sqNbParticles;
 		std::vector<glm::vec2> initPos = lvl.densityMap->sample(std::max(0u, nbParticles));
 		lvl.particles.reset(new Particles(initPos));
+		std::cout << "Generated " << nbParticles << " particles\n" << std::endl;
 	}
 
 	_picking.lock();
