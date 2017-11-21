@@ -3,6 +3,7 @@
 
 Mode::Mode(sf::Window const& window):
 	_screenSize(window.getSize().x, window.getSize().y),
+	_brush(10.f, 100.f),
 	_showArrows(true),
 	_showBackground(true),
 	_showFlowMap(true),
@@ -40,6 +41,9 @@ void Mode::handleEvent(sf::Event const& event, sf::Window const& window)
 		}
 		break;
 	break;
+	case sf::Event::MouseWheelScrolled:
+		_brush.changeRadius(event.mouseWheelScroll.delta);
+		break;
 	default:
 		doHandleEvent(event);
 		break;

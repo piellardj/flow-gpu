@@ -67,15 +67,17 @@ void PlayMode::display() const
 	for (unsigned int iL = 0u; iL < _layers.size(); ++iL) {
 		_layers[iL].particles->draw(_screenSize, iL);
 	}
+
+	if (showBrush()) {
+		brush().display(_screenSize, iMousePos(), false);
+	}
 }
 
 void PlayMode::mouseMoved(glm::ivec2 const& movement)
 {
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-		float brushRadius = 50.f;
-
 		glm::vec2 relativeMovement = glm::vec2(movement.x, movement.y) / glm::vec2(_screenSize.x, _screenSize.y);
-		glm::vec2 relativeBrushSize = 2.f * glm::vec2(brushRadius) / glm::vec2(_screenSize.x, _screenSize.y);
+		glm::vec2 relativeBrushSize = 2.f * glm::vec2(brush().radius()) / glm::vec2(_screenSize.x, _screenSize.y);
 
 		if (_lastLayerPicked < _layers.size()) {
 			_layers[_lastLayerPicked].flowMap->addFlow(mousePos(), relativeMovement, relativeBrushSize);

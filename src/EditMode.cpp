@@ -9,8 +9,7 @@
 
 EditMode::EditMode(std::string const& saveFilename, sf::Window const& window, std::string const& flowmapFilename):
 	Mode(window),
-	_saveFilename(saveFilename),
-	_brush(10.f, 100.f)
+	_saveFilename(saveFilename)
 {
 	glm::uvec2 bufferSize(128, 128);
 	std::vector<glm::vec2> buffer(bufferSize.x * bufferSize.y, glm::vec2(0.f));
@@ -48,7 +47,7 @@ void EditMode::display() const
 		_flowMap->drawArrows(_screenSize);
 	}
 	if (showBrush()) {
-		_brush.display(_screenSize, iMousePos());
+		brush().display(_screenSize, iMousePos(), true);
 	}
 }
 
@@ -56,7 +55,7 @@ void EditMode::mouseMoved(glm::ivec2 const& movement)
 {
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 		glm::vec2 relativeMovement = glm::vec2(movement.x, movement.y) / glm::vec2(_screenSize.x, _screenSize.y);
-		glm::vec2 relativeBrushSize = 2.f * glm::vec2(_brush.radius()) / glm::vec2(_screenSize.x, _screenSize.y);
+		glm::vec2 relativeBrushSize = 2.f * glm::vec2(brush().radius()) / glm::vec2(_screenSize.x, _screenSize.y);
 
 		_flowMap->addFlow(mousePos(), relativeMovement, relativeBrushSize);
 	}
@@ -77,9 +76,6 @@ void EditMode::doHandleEvent(sf::Event const& event)
 
 			IO::saveFlowMap(_saveFilename, bufferSize, buffer);
 		}
-	case sf::Event::MouseWheelScrolled:
-		_brush.changeRadius(event.mouseWheelScroll.delta);
-		break;
 	default:
 		break;
 	}

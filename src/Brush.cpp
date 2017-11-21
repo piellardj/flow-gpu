@@ -33,10 +33,14 @@ void Brush::changeRadius(float nbSteps)
 	_radius = std::max(_minRadius, std::min(_maxRadius, _radius));
 }
 
-void Brush::display(glm::uvec2 const& screenSize, glm::ivec2 const& pos) const
+void Brush::display(glm::uvec2 const& screenSize, glm::ivec2 const& pos, bool onlyRing) const
 {
 	ShaderProgram::bind(_brushShader);
 
+	GLuint ringULoc = _brushShader.getUniformLocation("onlyRing");
+	if (ringULoc != ShaderProgram::nullLocation) {
+		GLCHECK(glUniform1ui(ringULoc, onlyRing));
+	}
 	GLuint screenULoc = _brushShader.getUniformLocation("screenSize");
 	if (screenULoc != ShaderProgram::nullLocation) {
 		GLCHECK(glUniform2f(screenULoc, screenSize.x, screenSize.y));
@@ -50,6 +54,7 @@ void Brush::display(glm::uvec2 const& screenSize, glm::ivec2 const& pos) const
 		GLCHECK(glUniform1f(radiusULoc, _radius));
 	}
 
+	GLCHECK(glDisable(GL_DEPTH_TEST));
 	GLCHECK(glEnable(GL_BLEND));
 	GLCHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 	GLCHECK(glBindVertexArray(_emptyVAO));

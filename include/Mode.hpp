@@ -6,6 +6,7 @@
 #include <SFML/Window/Window.hpp>
 
 #include "glm.hpp"
+#include "Brush.hpp"
 
 
 class Mode
@@ -29,6 +30,8 @@ protected:
 	inline bool showFlowMap() const { return _showFlowMap; }
 	inline bool showBrush() const { return _showBrush; }
 
+	inline Brush const& brush() const { return _brush; }
+
 private:
 	virtual void mouseMoved(glm::ivec2 const& movement) = 0;
 	virtual void doUpdate(float time, float dt) = 0;
@@ -41,6 +44,8 @@ protected:
 
 private:
 	glm::ivec2 _iMousePos;
+
+	Brush _brush;
 
 	float _lastUpdate;
 

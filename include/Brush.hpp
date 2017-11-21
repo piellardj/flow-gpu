@@ -24,7 +24,7 @@ public:
 
 	void changeRadius(float nbSteps);
 
-	void display(glm::uvec2 const& screenSize, glm::ivec2 const& pos) const;
+	void display(glm::uvec2 const& screenSize, glm::ivec2 const& pos, bool onlyRing=false) const;
 
 private:
 	const float _minRadius, _maxRadius;

@@ -5,7 +5,6 @@
 #include "Mode.hpp"
 #include "FlowMap.hpp"
 #include "Background.hpp"
-#include "Brush.hpp"
 
 #include <string>
 #include <memory>
@@ -31,7 +30,6 @@ private:
 
 	std::unique_ptr<FlowMap> _flowMap;
 	std::unique_ptr<Background> _background;
-	Brush _brush;
 };
 
 #endif // EDIT_MODE_HPP_INCLUDED
