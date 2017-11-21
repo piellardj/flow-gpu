@@ -1,0 +1,7 @@
+Window size=1280x720
+
+Mode=EDIT
+
+Save to="saved_flowmap.txt"
+Background="rc/portrait/layer3_background.png"
+Load from="rc/portrait/layer3_flowmap.txt"

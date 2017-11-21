@@ -1,0 +1,23 @@
+Window size=1280x720
+
+Mode=PLAY
+
+Layer:
+Background="rc/portrait/layer0_background.png"
+Flow map="rc/portrait/layer0_flowmap.txt"
+Nb particles=60000
+
+Layer:
+Background="rc/portrait/layer1_background.png"
+Flow map="rc/portrait/layer1_flowmap.txt"
+Nb particles=30000
+
+Layer:
+Background="rc/portrait/layer2_background.png"
+Flow map="rc/portrait/layer2_flowmap.txt"
+Nb particles=15000
+
+Layer:
+Background="rc/portrait/layer3_background.png"
+Flow map="rc/portrait/layer3_flowmap.txt"
+Nb particles=50000
