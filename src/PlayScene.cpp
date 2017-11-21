@@ -9,7 +9,7 @@
 #include <SFML/Graphics/Image.hpp>
 
 
-PlayScene::PlayScene(std::vector<LayerDescription> const& description, sf::Window const& window) :
+PlayScene::PlayScene(Description const& description, sf::Window const& window) :
 	Scene(window),
 	_picking(glm::uvec2(window.getSize().x, window.getSize().y))
 {

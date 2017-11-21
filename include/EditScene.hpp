@@ -14,11 +14,18 @@
 class EditScene: public Scene
 {
 public:
-	EditScene(std::string const& saveFilename, sf::Window const& window, std::string const& flowmapFilename="");
+	struct Description
+	{
+		std::string saveFilename;
+		std::string backgroundFilename;
+		std::string flowmapFilename;
+		glm::uvec2 defaultResolution; //to use if flowmapFilename couldn't be loaded
+	};
+
+public:
+	EditScene(Description const& description, sf::Window const& window);
 	virtual ~EditScene() {}
-
-	void setBackground(std::string const& filename);
-
+	
 	virtual void display() const;
 
 private:

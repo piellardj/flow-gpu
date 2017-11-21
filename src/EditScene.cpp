@@ -9,42 +9,46 @@
 #include <iostream>
 
 
-EditScene::EditScene(std::string const& saveFilename, sf::Window const& window, std::string const& flowmapFilename):
+EditScene::EditScene(Description const& description, sf::Window const& window) :
 	Scene(window),
-	_saveFilename(saveFilename)
+	_saveFilename(description.saveFilename)
 {
-	glm::uvec2 flowSize;
-	std::vector<glm::vec2> flowBuffer;
+	/* Flowmap loading */
+	{
+		glm::uvec2 flowSize;
+		std::vector<glm::vec2> flowBuffer;
 
-	if (IO::loadFlowMap(flowmapFilename, flowSize, flowBuffer)) {
-		std::cout << "Loaded flow map '" << flowmapFilename << "'" << std::endl;
-	}
-	else {
-		flowSize = glm::uvec2(128u, 128u);
-		flowBuffer.resize(flowSize.x * flowSize.y, glm::vec2(0.f));
-	}
-
-	_flowMap.reset(new FlowMap(flowSize, flowBuffer));
-}
-
-void EditScene::setBackground(std::string const& filename)
-{
-	glm::uvec2 backgroundSize;
-	std::vector<uint8_t> backgroundBuffer;
-	if (IO::load32bitImage(filename, backgroundSize, backgroundBuffer)) {
-		std::cout << "Loaded background '" << filename << "'" << std::endl;
-
-		_background.reset(new Background(backgroundSize, backgroundBuffer));
-
-		std::vector<uint8_t> densityBuffer(backgroundSize.x * backgroundSize.y);
-		for (unsigned int i = 0u; i < densityBuffer.size(); ++i) {
-			densityBuffer[i] = backgroundBuffer[4u * i + 3];
+		if (IO::loadFlowMap(description.flowmapFilename, flowSize, flowBuffer)) {
+			std::cout << "Loaded flow map '" << description.flowmapFilename << "'" << std::endl;
+		}
+		else {
+			flowSize = description.defaultResolution;
+			flowSize = glm::uvec2(std::max(flowSize.x, 1u), std::max(flowSize.y, 1u));
+			flowBuffer.resize(flowSize.x * flowSize.y, glm::vec2(0.f));
 		}
 
-		DensityMap densityMap(backgroundSize, densityBuffer);
-		std::vector<glm::vec2> initPos = densityMap.sample(128*128);
-		_particles.reset(new Particles(initPos));
-		std::cout << "Generated " << _particles->nbParticles() << " particles\n" << std::endl;
+		_flowMap.reset(new FlowMap(flowSize, flowBuffer));
+	}
+
+	/* Background and particles loading*/
+	{
+		glm::uvec2 backgroundSize;
+		std::vector<uint8_t> backgroundBuffer;
+		if (IO::load32bitImage(description.backgroundFilename, backgroundSize, backgroundBuffer)) {
+			std::cout << "Loaded background '" << description.backgroundFilename << "'" << std::endl;
+
+			_background.reset(new Background(backgroundSize, backgroundBuffer));
+
+			std::vector<uint8_t> densityBuffer(backgroundSize.x * backgroundSize.y);
+			for (unsigned int i = 0u; i < densityBuffer.size(); ++i) {
+				densityBuffer[i] = backgroundBuffer[4u * i + 3];
+			}
+
+			DensityMap densityMap(backgroundSize, densityBuffer);
+			std::vector<glm::vec2> initPos = densityMap.sample(200 * 200);
+			_particles.reset(new Particles(initPos));
+			std::cout << "Generated " << _particles->nbParticles() << " particles\n" << std::endl;
+		}
 	}
 }
 

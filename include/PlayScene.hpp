@@ -24,14 +24,16 @@ public:
 			backgroundFilename(back), flowFilename(flow), sqNbParticles(sqNb)
 		{}
 
-		const std::string backgroundFilename;
-		const std::string flowFilename;
-		const unsigned int sqNbParticles;
+		std::string backgroundFilename;
+		std::string flowFilename;
+		unsigned int sqNbParticles;
 	};
+	typedef std::vector<LayerDescription> Description;
 
-	PlayScene(std::vector<LayerDescription> const& description, sf::Window const& window);
+public:
+	PlayScene(Description const& description, sf::Window const& window);
 	virtual ~PlayScene() {}
-
+	
 	virtual void display() const;
 
 private:

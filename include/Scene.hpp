@@ -12,6 +12,9 @@
 class Scene
 {
 public:
+	enum class Type{EDIT, PLAY};
+
+public:
 	Scene(sf::Window const& window);
 	virtual ~Scene() {}
 
