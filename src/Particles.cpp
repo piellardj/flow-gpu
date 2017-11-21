@@ -229,7 +229,7 @@ void Particles::update(glm::uvec2 const& screenSize, FlowMap& flowMap, Backgroun
 
 	GLuint screenULoc = _updateShader.getUniformLocation("screenSize");
 	if (screenULoc != ShaderProgram::nullLocation) {
-		GLCHECK(glUniform2f(screenULoc, screenSize.x, screenSize.y));
+		GLCHECK(glUniform2f(screenULoc, (float)(screenSize.x), (float)(screenSize.y)));
 	}
 	GLuint lifetimeULoc = _updateShader.getUniformLocation("lifetime");
 	if (lifetimeULoc != ShaderProgram::nullLocation) {
@@ -269,7 +269,7 @@ void Particles::draw(glm::uvec2 const& screenSize, unsigned int layer) const
 
 	GLuint screenULoc = _drawShader.getUniformLocation("screenSize");
 	if (screenULoc != ShaderProgram::nullLocation) {
-		GLCHECK(glUniform2f(screenULoc, screenSize.x, screenSize.y));
+		GLCHECK(glUniform2f(screenULoc, (float)(screenSize.x), (float)(screenSize.y)));
 	}
 	GLuint lifetimeULoc = _drawShader.getUniformLocation("lifetime");
 	if (lifetimeULoc != ShaderProgram::nullLocation) {

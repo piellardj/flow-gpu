@@ -46,7 +46,7 @@ void Brush::display(glm::uvec2 const& screenSize, glm::ivec2 const& pos, bool on
 	}
 	GLuint screenULoc = _brushShader.getUniformLocation("screenSize");
 	if (screenULoc != ShaderProgram::nullLocation) {
-		GLCHECK(glUniform2f(screenULoc, screenSize.x, screenSize.y));
+		GLCHECK(glUniform2f(screenULoc, (float)(screenSize.x), (float)(screenSize.y)));
 	}
 	GLuint posULoc = _brushShader.getUniformLocation("brushPos");
 	if (posULoc != ShaderProgram::nullLocation) {

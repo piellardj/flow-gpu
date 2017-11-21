@@ -246,7 +246,7 @@ void FlowMap::drawArrows(glm::ivec2 const& screenSize) const
 
 	GLuint screenULoc = _drawArrowsShader.getUniformLocation("screenSize");
 	if (screenULoc != ShaderProgram::nullLocation) {
-		GLCHECK(glUniform2f(screenULoc, screenSize.x, screenSize.y));
+		GLCHECK(glUniform2f(screenULoc, (float)(screenSize.x), (float)(screenSize.y)));
 	}
 	GLuint sizeULoc = _drawArrowsShader.getUniformLocation("arrowSize");
 	if (sizeULoc != ShaderProgram::nullLocation) {
