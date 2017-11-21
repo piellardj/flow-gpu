@@ -1,11 +1,12 @@
 #include "Mode.hpp"
 
 
-Mode::Mode(sf::Window const& window):
+Mode::Mode(sf::Window const& window) :
 	_screenSize(window.getSize().x, window.getSize().y),
 	_brush(10.f, 100.f),
 	_showArrows(true),
 	_showBackground(true),
+	_showParticles(true),
 	_showFlowMap(true),
 	_showBrush(true)
 {
@@ -27,14 +28,17 @@ void Mode::handleEvent(sf::Event const& event, sf::Window const& window)
 		if (event.key.code == sf::Keyboard::A) {
 			_showArrows = !_showArrows;
 		}
-		else if (event.key.code == sf::Keyboard::F) {
-			_showFlowMap = !_showFlowMap;
-		}
 		else if (event.key.code == sf::Keyboard::B) {
 			_showBackground = !_showBackground;
 		}
 		else if (event.key.code == sf::Keyboard::C) {
 			_showBrush = !_showBrush;
+		}
+		else if (event.key.code == sf::Keyboard::F) {
+			_showFlowMap = !_showFlowMap;
+		}
+		else if (event.key.code == sf::Keyboard::P) {
+			_showParticles = !_showParticles;
 		}
 		else {
 			doHandleEvent(event);

@@ -65,8 +65,10 @@ void PlayMode::display() const
 		}
 	}
 
-	for (unsigned int iL = 0u; iL < _layers.size(); ++iL) {
-		_layers[iL].particles->draw(_screenSize, iL);
+	if (showParticles()) {
+		for (unsigned int iL = 0u; iL < _layers.size(); ++iL) {
+			_layers[iL].particles->draw(_screenSize, iL);
+		}
 	}
 
 	if (showBrush()) {

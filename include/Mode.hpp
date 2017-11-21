@@ -27,6 +27,7 @@ protected:
 
 	inline bool showArrows() const { return _showArrows; }
 	inline bool showBackground() const { return _showBackground; }
+	inline bool showParticles() const { return _showParticles; }
 	inline bool showFlowMap() const { return _showFlowMap; }
 	inline bool showBrush() const { return _showBrush; }
 
@@ -51,6 +52,7 @@ private:
 
 	bool _showArrows; //A
 	bool _showBackground; //B
+	bool _showParticles; //P
 	bool _showFlowMap; //F
 	bool _showBrush; //C
 };
