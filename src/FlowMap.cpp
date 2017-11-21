@@ -106,7 +106,7 @@ FlowMap::FlowMap(glm::uvec2 const& bufferSize, std::vector<glm::vec2> flowBuffer
 	if (!_drawArrowsShader.loadFromFile("shaders/flowBufferDrawArrows.vert", "shaders/flowBufferDrawArrows.frag")) {
 		std::cerr << "Error: unable to load shader flowBufferDrawArrows" << std::endl;
 	}
-	if (!_addShader.loadFromFile("shaders/flowBufferAdd.vert", "shaders/flowBufferAdd.frag")) {
+	if (!_changeShader.loadFromFile("shaders/flowBufferChange.vert", "shaders/flowBufferChange.frag")) {
 		std::cerr << "Error: unable to load shader flowBufferUpdate" << std::endl;
 	}
 	if (!_resetShader.loadFromFile("shaders/flowBufferReset.vert", "shaders/flowBufferReset.frag")) {
@@ -136,9 +136,9 @@ void FlowMap::getData(glm::uvec2& bufferSize, std::vector<glm::vec2>& flowBuffer
 	GLCHECK(glBindTexture(GL_TEXTURE_2D, 0u));
 }
 
-void FlowMap::addFlow(glm::vec2 const& pos, glm::vec2 const& flow, glm::vec2 const& brushSize)
+void FlowMap::changeLocally(glm::vec2 const& pos, glm::vec2 const& movement, glm::vec2 const& brushSize, bool setNull)
 {
-	if (!_addShader.isValid())
+	if (!_changeShader.isValid())
 		return;
 
 	switchBuffer();
@@ -152,21 +152,25 @@ void FlowMap::addFlow(glm::vec2 const& pos, glm::vec2 const& flow, glm::vec2 con
 	GLCHECK(glViewport(0, 0, _bufferSize.x, _bufferSize.y));
 	GLCHECK(glClear(GL_COLOR_BUFFER_BIT));
 
-	ShaderProgram::bind(_addShader);
+	ShaderProgram::bind(_changeShader);
 
 	/* Uniforms setup */
 	TextureBinder textureBinder;
-	textureBinder.bindTexture(_addShader, "previousBuffer", prevBufferId());
+	textureBinder.bindTexture(_changeShader, "previousBuffer", prevBufferId());
 
-	GLuint flowULoc = _addShader.getUniformLocation("flow");
-	if (flowULoc != ShaderProgram::nullLocation) {
-		GLCHECK(glUniform2f(flowULoc, flow.x, flow.y));
+	GLuint nullULoc = _changeShader.getUniformLocation("setNull");
+	if (nullULoc != ShaderProgram::nullLocation) {
+		GLCHECK(glUniform1ui(nullULoc, setNull));
 	}
-	GLuint brushSizeULoc = _addShader.getUniformLocation("brushSize");
+	GLuint movementULoc = _changeShader.getUniformLocation("movement");
+	if (movementULoc != ShaderProgram::nullLocation) {
+		GLCHECK(glUniform2f(movementULoc, movement.x, movement.y));
+	}
+	GLuint brushSizeULoc = _changeShader.getUniformLocation("brushSize");
 	if (brushSizeULoc != ShaderProgram::nullLocation) {
 		GLCHECK(glUniform2f(brushSizeULoc, brushSize.x, brushSize.y));
 	}
-	GLuint brushPosULoc = _addShader.getUniformLocation("brushPos");
+	GLuint brushPosULoc = _changeShader.getUniformLocation("brushPos");
 	if (brushPosULoc != ShaderProgram::nullLocation) {
 		GLCHECK(glUniform2f(brushPosULoc, pos.x, pos.y));
 	}

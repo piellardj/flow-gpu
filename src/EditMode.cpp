@@ -53,11 +53,14 @@ void EditMode::display() const
 
 void EditMode::mouseMoved(glm::ivec2 const& movement)
 {
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-		glm::vec2 relativeMovement = glm::vec2(movement.x, movement.y) / glm::vec2(_screenSize.x, _screenSize.y);
-		glm::vec2 relativeBrushSize = 2.f * glm::vec2(brush().radius()) / glm::vec2(_screenSize.x, _screenSize.y);
+	glm::vec2 relativeMovement = glm::vec2(movement.x, movement.y) / glm::vec2(_screenSize.x, _screenSize.y);
+	glm::vec2 relativeBrushSize = 2.f * glm::vec2(brush().radius()) / glm::vec2(_screenSize.x, _screenSize.y);
 
-		_flowMap->addFlow(mousePos(), relativeMovement, relativeBrushSize);
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		_flowMap->changeLocally(mousePos(), relativeMovement, relativeBrushSize);
+	}
+	else if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+		_flowMap->changeLocally(mousePos(), relativeMovement, relativeBrushSize, true);
 	}
 }
 

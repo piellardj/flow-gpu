@@ -80,7 +80,7 @@ void PlayMode::mouseMoved(glm::ivec2 const& movement)
 		glm::vec2 relativeBrushSize = 2.f * glm::vec2(brush().radius()) / glm::vec2(_screenSize.x, _screenSize.y);
 
 		if (_lastLayerPicked < _layers.size()) {
-			_layers[_lastLayerPicked].flowMap->addFlow(mousePos(), relativeMovement, relativeBrushSize);
+			_layers[_lastLayerPicked].flowMap->changeLocally(mousePos(), relativeMovement, relativeBrushSize);
 		}
 	}
 }

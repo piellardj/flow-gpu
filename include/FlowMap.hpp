@@ -23,7 +23,7 @@ public:
 
 	void getData(glm::uvec2& bufferSize, std::vector<glm::vec2>& flowBuffer) const;
 	
-	void addFlow(glm::vec2 const& pos, glm::vec2 const& flow, glm::vec2 const& brushSize);
+	void changeLocally(glm::vec2 const& pos, glm::vec2 const& movement, glm::vec2 const& brushSize, bool setNull=false);
 
 	void reset(float factor);
 
@@ -53,7 +53,7 @@ private:
 
 	mutable ShaderProgram _drawMapShader;
 	mutable ShaderProgram _drawArrowsShader;
-	mutable ShaderProgram _addShader;
+	mutable ShaderProgram _changeShader;
 	mutable ShaderProgram _resetShader;
 };
 
