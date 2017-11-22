@@ -31,7 +31,6 @@ namespace Parser
 		std::regex sceneRegex("Mode=(EDIT|PLAY)\n+");
 		std::smatch matches;
 
-		std::string s = matches.suffix();// matches[3].str();
 		if (!std::regex_search(str, matches, sceneRegex, std::regex_constants::match_continuous)) {
 			std::cerr << "Couldn't parse mode. The pattern is\nMode=[EDIT or PLAY]" << std::endl;
 			return false;
