@@ -30,6 +30,9 @@ static void displayGLInfo()
 
 int main(int argc, char* argv[])
 {
+	glm::uvec2 windowSize(1280, 720);
+//#define REGEX_WORK
+#ifdef REGEX_WORK
 	std::string setupFilename = (argc == 2) ? argv[1] : "setup.txt";
 	std::string setupStr;
 	if (!IO::loadFileToStr(setupFilename, setupStr)) {
@@ -37,10 +40,11 @@ int main(int argc, char* argv[])
 	}
 
 	std::cout << "Loading setup file '" << setupFilename << "'" << std::endl;
-	glm::uvec2 windowSize;
+
 	if (!Parser::parseWindowSize(setupStr, windowSize)) {
 		return EXIT_SUCCESS;
 	}
+#endif
 
 	/* Window creation, OpenGL initialization */
 	sf::ContextSettings openGL3DContext(24, 0, 0, //depth, stencil, antialiasing
@@ -49,9 +53,10 @@ int main(int argc, char* argv[])
 	window.create(sf::VideoMode(windowSize.x, windowSize.y), "Flow", sf::Style::Titlebar | sf::Style::Close, openGL3DContext);
 	window.setVerticalSyncEnabled(true);
 	initGLEW();
-	
+
 	/* Scene parsing and creation */
 	std::unique_ptr<Scene> scene;
+#ifdef REGEX_WORK
 	Scene::Type sceneType;
 	if (!Parser::parseScene(setupStr, sceneType)) {
 		return EXIT_SUCCESS;
@@ -71,6 +76,14 @@ int main(int argc, char* argv[])
 		}
 		scene.reset(new PlayScene(description, window));
 	}
+#else
+    PlayScene::Description description;
+    description.emplace_back("rc/portrait/layer0_background.png", "rc/portrait/layer0_flowmap.txt", 200);
+    description.emplace_back("rc/portrait/layer1_background.png", "rc/portrait/layer1_flowmap.txt", 128);
+    description.emplace_back("rc/portrait/layer2_background.png", "rc/portrait/layer2_flowmap.txt", 128);
+        description.emplace_back("rc/portrait/layer3_background.png", "rc/portrait/layer3_flowmap.txt", 200);
+    scene.reset(new PlayScene(description, window));
+#endif
 
 	displayGLInfo();
 
@@ -89,7 +102,7 @@ int main(int argc, char* argv[])
 		}
 
 		scene->update(overallFPS.getElapsedTime().asSeconds());
-		
+
 		window.setActive(true);
 		glViewport(0, 0, window.getSize().x, window.getSize().y);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
