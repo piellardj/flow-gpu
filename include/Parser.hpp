@@ -18,6 +18,6 @@ namespace Parser
 	bool parsePlayScene(std::string& str, PlayScene::Description& description);
 
 	unsigned int stringToUint(std::string const& s);
-};
+}
 
 #endif // PARSER_HPP_INCLUDED
