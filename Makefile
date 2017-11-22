@@ -38,12 +38,12 @@ cleanall:
 	rm -rf obj/* bin/$(EXEC)
 
 run: bin/$(EXEC)
-	export LD_LIBRARY_PATH="$(SFML_PATH)/lib;$(GLEW_PATH)/lib" ; bin/$(EXEC) rc/monkey.obj
+	export LD_LIBRARY_PATH="$(SFML_PATH)/lib;$(GLEW_PATH)/lib" ; bin/$(EXEC) setup.txt
 
 run_gdb: bin/$(EXEC)
-	export LD_LIBRARY_PATH="$(SFML_PATH)/lib;$(GLEW_PATH)/lib" ; gdb bin/$(EXEC) rc/monkey.obj
+	export LD_LIBRARY_PATH="$(SFML_PATH)/lib;$(GLEW_PATH)/lib" ; gdb bin/$(EXEC) setup.txt
 
 run_valgrind: bin/$(EXEC)
-	export LD_LIBRARY_PATH="$(SFML_PATH)/lib;$(GLEW_PATH)/lib" ; valgrind --leak-check=full bin/$(EXEC) rc/monkey.obj
+	export LD_LIBRARY_PATH="$(SFML_PATH)/lib;$(GLEW_PATH)/lib" ; valgrind --leak-check=full bin/$(EXEC) setup.txt
 
 
