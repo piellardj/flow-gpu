@@ -68,14 +68,14 @@ Particles::Particles(std::vector<glm::vec2> const& initPos) :
 		GLCHECK(glGenTextures(_posTexture.size(), _posTexture.data()));
 		for (GLuint& bufferId : _posTexture) {
 			GLCHECK(glBindTexture(GL_TEXTURE_2D, bufferId));
-			GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F, _bufferSize.x, _bufferSize.y, 0, GL_RG, GL_FLOAT, initPos.data()));
+			GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F, _bufferSize.x, _bufferSize.y, 0, GL_RG, GL_FLOAT, initPosPtr->data()));
 			GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 			GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
 		}
 
 		GLCHECK(glGenTextures(1, &_initPosTexture));
 		GLCHECK(glBindTexture(GL_TEXTURE_2D, _initPosTexture));
-		GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, _bufferSize.x, _bufferSize.y, 0, GL_RG, GL_FLOAT, initPos.data()));
+		GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, _bufferSize.x, _bufferSize.y, 0, GL_RG, GL_FLOAT, initPosPtr->data()));
 		GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 		GLCHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
 	}
