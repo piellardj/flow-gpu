@@ -34,12 +34,6 @@ static float normalizeLine(std::vector<float>& line)
 	return total;
 }
 
-/*! \return a if x=0, b if x=1, and linearily interpolates for other x values */
-static float mix(float a, float b, float x)
-{
-	return x * b + (1.f - x) * a;
-}
-
 Sampler2D::Sampler2D(glm::uvec2 const& size, std::vector<float> density) :
 	_size(size)
 {
